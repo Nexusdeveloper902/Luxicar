@@ -6,14 +6,15 @@ and authentication views, dashboards, and multiple visual themes.
 
 ## Run locally
 
-Serve the project root with any static file server, then open the displayed
-local URL in a browser. For example:
+Serve the project root with SPA fallback enabled, then open the displayed local
+URL in a browser:
 
 ```bash
-python3 -m http.server 8000
+npx serve -s
 ```
 
-Visit `http://localhost:8000`.
+The `-s` flag serves `index.html` for unmatched routes, allowing direct visits
+to client-side URLs such as `/vehiculos/...`.
 
 ## Project structure
 

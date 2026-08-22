@@ -1,0 +1,335 @@
+/* ==========================================================================
+   app.css — animaciones y comportamientos que sustituyen a framer-motion
+   y estilos de componentes dinámicos (toasts, gráficos, lightbox de imágenes).
+   La curva de easing de la app original: cubic-bezier(0.22, 1, 0.36, 1).
+   ========================================================================== */
+
+:root {
+  --ease-lux: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* --- Transición de página ------------------------------------------------ */
+.page-enter {
+  animation: pageIn 0.4s var(--ease-lux) both;
+}
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Animaciones de entrada inmediatas (initial -> animate) ------------- */
+.anim-in {
+  opacity: 0;
+  animation: fadeUp var(--dur, 0.6s) var(--ease-lux) var(--delay, 0s) forwards;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(var(--from-y, 16px)); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Animaciones al hacer scroll (whileInView) -------------------------- */
+.anim-view {
+  opacity: 0;
+  transform: translateY(var(--from-y, 16px));
+  transition:
+    opacity var(--dur, 0.6s) var(--ease-lux) var(--delay, 0s),
+    transform var(--dur, 0.6s) var(--ease-lux) var(--delay, 0s);
+}
+.anim-view.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter, .anim-in, .anim-view {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* --- Indicador de scroll del hero --------------------------------------- */
+.scroll-hint {
+  animation: scrollHint 2.4s ease-in-out infinite;
+}
+@keyframes scrollHint {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+/* --- Capas de imagen con parallax --------------------------------------- */
+.parallax-layer {
+  will-change: transform;
+}
+
+/* --- SmartImage: shimmer + aparición suave ------------------------------- */
+.smart-img {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--secondary);
+}
+.smart-img::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, oklch(1 0 0 / 5%) 50%, transparent 70%);
+  animation: shimmer 1.6s linear infinite;
+  transition: opacity 0.4s ease;
+}
+.smart-img.loaded::before {
+  opacity: 0;
+  animation: none;
+}
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+.smart-img > img {
+  opacity: 0;
+  filter: blur(10px);
+  transform: scale(1.04);
+  transition:
+    opacity 0.55s ease,
+    filter 0.55s ease,
+    transform 0.7s var(--ease-lux);
+}
+.smart-img.loaded > img {
+  opacity: 1;
+  filter: blur(0);
+  transform: scale(1);
+}
+.group:hover .smart-img.hover-scale.loaded > img {
+  transform: scale(var(--hs, 1.04));
+}
+
+/* --- Aparición de tarjetas con retardo escalonado ------------------------ */
+.card-in {
+  opacity: 0;
+  animation: fadeUpCard 0.5s var(--ease-lux) var(--delay, 0s) forwards;
+}
+@keyframes fadeUpCard {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Intercambio de iconos (favorito / comparar) ------------------------- */
+.icon-pop {
+  animation: iconPop 0.28s cubic-bezier(0.34, 1.8, 0.5, 1) both;
+}
+@keyframes iconPop {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* --- Insignia del carrito ------------------------------------------------ */
+.badge-pop {
+  animation: badgePop 0.3s cubic-bezier(0.34, 1.6, 0.5, 1) both;
+}
+@keyframes badgePop {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+
+/* --- Píldora de navegación activa ---------------------------------------- */
+.nav-pill {
+  animation: pillIn 0.25s var(--ease-lux) both;
+}
+@keyframes pillIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* --- Menú móvil (sheet lateral) ------------------------------------------ */
+.sheet-overlay {
+  animation: fadeIn 0.3s ease both;
+}
+.sheet-overlay.closing {
+  animation: fadeOut 0.3s ease both;
+}
+.sheet-panel {
+  animation: slideInRight 0.45s var(--ease-lux) both;
+}
+.sheet-panel.closing {
+  animation: slideOutRight 0.3s ease-in both;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+@keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes slideOutRight { from { transform: translateX(0); } to { transform: translateX(100%); } }
+
+/* --- Menús desplegables --------------------------------------------------- */
+.menu-pop {
+  transform-origin: top right;
+  animation: menuPop 0.18s var(--ease-lux) both;
+}
+@keyframes menuPop {
+  from { opacity: 0; transform: scale(0.96) translateY(-6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* --- Modales -------------------------------------------------------------- */
+.modal-overlay {
+  animation: fadeIn 0.2s ease both;
+}
+.modal-overlay.closing {
+  animation: fadeOut 0.2s ease both;
+}
+.modal-content {
+  animation: modalIn 0.25s var(--ease-lux) both;
+}
+.modal-content.closing {
+  animation: modalOut 0.18s ease both;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.96) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes modalOut {
+  from { opacity: 1; transform: scale(1) translateY(0); }
+  to { opacity: 0; transform: scale(0.96) translateY(12px); }
+}
+
+/* --- Banner de cookies ---------------------------------------------------- */
+.cookie-in {
+  animation: cookieIn 0.4s var(--ease-lux) both;
+}
+.cookie-out {
+  animation: cookieOut 0.3s ease both;
+}
+@keyframes cookieIn {
+  from { transform: translateY(120px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes cookieOut {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(120px); opacity: 0; }
+}
+
+/* --- CTA móvil fijo -------------------------------------------------------- */
+.sticky-cta-in {
+  animation: stickyCtaIn 0.3s var(--ease-lux) both;
+}
+@keyframes stickyCtaIn {
+  from { transform: translateY(80px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* --- Icono de éxito (gracias / checkout) ----------------------------------- */
+.success-pop {
+  animation: successPop 0.55s cubic-bezier(0.34, 1.6, 0.4, 1) both;
+}
+@keyframes successPop {
+  from { transform: scale(0) rotate(-20deg); opacity: 0; }
+  to { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* --- Toasts ---------------------------------------------------------------- */
+.toast {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-radius: 0.9rem;
+  border: 1px solid var(--border);
+  background: var(--popover);
+  color: var(--popover-foreground);
+  padding: 0.8rem 1rem;
+  box-shadow: 0 4px 12px -2px oklch(0 0 0 / 0.35), 0 24px 48px -12px oklch(0 0 0 / 0.6);
+  animation: toastIn 0.3s var(--ease-lux) both;
+}
+.toast.closing {
+  animation: toastOut 0.25s ease both;
+}
+.toast-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.toast-desc {
+  font-size: 0.78rem;
+  color: var(--muted-foreground);
+  line-height: 1.45;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes toastOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(10px) scale(0.97); }
+}
+
+/* --- Panel de filtros móvil (altura animada) ------------------------------- */
+.filtros-movil {
+  overflow: hidden;
+  transition: height 0.35s var(--ease-lux);
+}
+
+/* --- Gráficos SVG (sustituyen a recharts) ---------------------------------- */
+.chart-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--foreground);
+  font-size: 13px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 12px -2px oklch(0 0 0 / 0.35);
+  white-space: nowrap;
+  z-index: 30;
+  opacity: 0;
+  transform: translate(-50%, -100%) translateY(-8px);
+  transition: opacity 0.15s ease;
+}
+.chart-tooltip.visible { opacity: 1; }
+.chart-wrap { position: relative; }
+.chart-wrap svg { display: block; width: 100%; height: auto; }
+.chart-axis-text {
+  font-size: 11px;
+  fill: var(--muted-foreground);
+  font-family: inherit;
+}
+.chart-grid-line {
+  stroke: oklch(1 0 0 / 6%);
+  stroke-dasharray: 3 3;
+}
+.chart-area-anim {
+  animation: chartReveal 1.2s ease both;
+}
+@keyframes chartReveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.chart-bar-anim {
+  transform-origin: bottom;
+  animation: barGrow 0.7s var(--ease-lux) both;
+}
+.chart-bar-h-anim {
+  transform-origin: left;
+  animation: barGrowH 0.7s var(--ease-lux) both;
+}
+@keyframes barGrow {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+@keyframes barGrowH {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* --- Utilidades varias ------------------------------------------------------ */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+select.select-premium option {
+  background-color: var(--card);
+  color: var(--foreground);
+}
+.no-scroll {
+  overflow: hidden;
+}

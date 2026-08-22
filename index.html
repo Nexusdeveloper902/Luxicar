@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vehículos de Alta Gama · Digital Marketplace</title>
+  <meta name="description" content="Marketplace digital de vehículos de alta gama. Descubre, compara y adquiere los modelos más exclusivos del mundo en una experiencia de compra premium." />
+  <!-- Base relativa para file://; en HTTP(S) se reescribe a "/" para que los
+       deep-links (/vehiculos/…) resuelvan los assets desde la raíz. -->
+  <base id="base-url" href="/" />
+  <link rel="icon" type="image/x-icon" href="/assets/favicon/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon/android-chrome-192x192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon/android-chrome-512x512.png" />
+  <script>
+    // Aplicación temprana del tema visual para evitar parpadeo (FOUC).
+    (function () {
+      var TEMAS = {
+        midnight: { "--background": "oklch(0.12 0.004 75)", "--foreground": "oklch(0.98 0.002 75)", "--card": "oklch(0.165 0.005 75)", "--popover": "oklch(0.17 0.005 75)", "--primary": "oklch(0.98 0.002 75)", "--primary-foreground": "oklch(0.12 0.004 75)", "--secondary": "oklch(0.215 0.005 75)", "--muted": "oklch(0.2 0.005 75)", "--muted-foreground": "oklch(0.64 0.012 75)", "--accent": "oklch(0.245 0.006 75)", "--border": "oklch(1 0 0 / 8%)", "--input": "oklch(1 0 0 / 12%)", "--ring": "oklch(0.98 0 0 / 35%)", "--signature": "oklch(0.85 0.09 80)", "--success": "oklch(0.72 0.16 155)" },
+        arctic: { "--background": "oklch(0.13 0.006 240)", "--foreground": "oklch(0.98 0.003 240)", "--card": "oklch(0.17 0.008 240)", "--popover": "oklch(0.18 0.008 240)", "--primary": "oklch(0.97 0.01 240)", "--primary-foreground": "oklch(0.13 0.006 240)", "--secondary": "oklch(0.22 0.008 240)", "--muted": "oklch(0.2 0.008 240)", "--muted-foreground": "oklch(0.66 0.015 240)", "--accent": "oklch(0.25 0.01 240)", "--border": "oklch(1 0 0 / 8%)", "--input": "oklch(1 0 0 / 12%)", "--ring": "oklch(0.7 0.12 240 / 40%)", "--signature": "oklch(0.72 0.12 220)", "--success": "oklch(0.72 0.16 155)" },
+        emerald: { "--background": "oklch(0.12 0.006 160)", "--foreground": "oklch(0.98 0.003 160)", "--card": "oklch(0.165 0.008 160)", "--popover": "oklch(0.17 0.008 160)", "--primary": "oklch(0.97 0.01 160)", "--primary-foreground": "oklch(0.12 0.006 160)", "--secondary": "oklch(0.215 0.008 160)", "--muted": "oklch(0.2 0.008 160)", "--muted-foreground": "oklch(0.65 0.015 160)", "--accent": "oklch(0.245 0.01 160)", "--border": "oklch(1 0 0 / 8%)", "--input": "oklch(1 0 0 / 12%)", "--ring": "oklch(0.72 0.16 155 / 40%)", "--signature": "oklch(0.75 0.15 155)", "--success": "oklch(0.72 0.16 155)" },
+        crimson: { "--background": "oklch(0.13 0.008 25)", "--foreground": "oklch(0.98 0.003 25)", "--card": "oklch(0.17 0.01 25)", "--popover": "oklch(0.18 0.01 25)", "--primary": "oklch(0.97 0.01 25)", "--primary-foreground": "oklch(0.13 0.008 25)", "--secondary": "oklch(0.22 0.01 25)", "--muted": "oklch(0.2 0.01 25)", "--muted-foreground": "oklch(0.66 0.018 25)", "--accent": "oklch(0.25 0.012 25)", "--border": "oklch(1 0 0 / 8%)", "--input": "oklch(1 0 0 / 12%)", "--ring": "oklch(0.62 0.22 25 / 40%)", "--signature": "oklch(0.65 0.22 25)", "--success": "oklch(0.72 0.16 155)" },
+        royal: { "--background": "oklch(0.13 0.008 290)", "--foreground": "oklch(0.98 0.003 290)", "--card": "oklch(0.17 0.01 290)", "--popover": "oklch(0.18 0.01 290)", "--primary": "oklch(0.97 0.01 290)", "--primary-foreground": "oklch(0.13 0.008 290)", "--secondary": "oklch(0.22 0.01 290)", "--muted": "oklch(0.2 0.01 290)", "--muted-foreground": "oklch(0.66 0.018 290)", "--accent": "oklch(0.25 0.012 290)", "--border": "oklch(1 0 0 / 8%)", "--input": "oklch(1 0 0 / 12%)", "--ring": "oklch(0.6 0.2 290 / 40%)", "--signature": "oklch(0.68 0.18 290)", "--success": "oklch(0.72 0.16 155)" },
+        carbon: { "--background": "oklch(0.11 0.002 250)", "--foreground": "oklch(0.96 0.002 250)", "--card": "oklch(0.155 0.003 250)", "--popover": "oklch(0.165 0.003 250)", "--primary": "oklch(0.96 0.002 250)", "--primary-foreground": "oklch(0.11 0.002 250)", "--secondary": "oklch(0.205 0.003 250)", "--muted": "oklch(0.19 0.003 250)", "--muted-foreground": "oklch(0.6 0.005 250)", "--accent": "oklch(0.235 0.004 250)", "--border": "oklch(1 0 0 / 7%)", "--input": "oklch(1 0 0 / 11%)", "--ring": "oklch(0.96 0 0 / 30%)", "--signature": "oklch(0.7 0.015 250)", "--success": "oklch(0.72 0.16 155)" }
+      };
+      try {
+        var raw = localStorage.getItem("digital-marketplace-tema");
+        var id = raw ? (JSON.parse(raw).state || {}).temaActivo : null;
+        var vars = TEMAS[id] || TEMAS.midnight;
+        for (var k in vars) document.documentElement.style.setProperty(k, vars[k]);
+      } catch (e) { /* tema por defecto */ }
+    })();
+  </script>
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/app.css" />
+</head>
+<body class="antialiased bg-background text-foreground">
+  <div id="app"></div>
+  <div id="modal-root"></div>
+  <div id="toast-root" class="pointer-events-none fixed bottom-4 right-4 z-[100] flex w-full max-w-sm flex-col gap-2 px-4 sm:px-0" aria-live="polite"></div>
+  <script src="/js/icons.js"></script>
+  <script src="/js/data.js"></script>
+  <script src="/js/admin-data.js"></script>
+  <script src="/js/store.js"></script>
+  <script src="/js/charts.js"></script>
+  <script src="/js/components.js"></script>
+  <script src="/js/pages.js"></script>
+  <script src="/js/pages-cuenta.js"></script>
+  <script src="/js/pages-auth.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

@@ -109,6 +109,9 @@ function headerHtml(path) {
       '<div class="-mx-1 my-1 h-px bg-border"></div>' +
       menuItem("/perfil", "User", "Mi perfil") +
       menuItem("/pedidos", "Receipt", "Mis pedidos") +
+      '<a href="/recargar" data-nav class="relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-foreground outline-none select-none hover:bg-accent">' +
+      icon("Wallet", "h-4 w-4") + "<span>Saldo</span>" +
+      '<span class="ml-auto text-xs font-semibold text-[var(--signature)]">' + formatearPrecio(DB.saldoDe(user.email)) + "</span></a>" +
       (user.role === "ADMIN" ? menuItem("/admin", "Shield", "Panel admin") : "") +
       '<div class="-mx-1 my-1 h-px bg-border"></div>' +
       '<button data-action="logout" class="relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-[var(--destructive)] outline-none select-none hover:bg-accent">' +
@@ -243,6 +246,11 @@ function sheetHtml(path) {
     }
     cuentaRows += sheetRow("/perfil", "User", "Mi perfil", estaActivo(path, "/perfil"));
     cuentaRows += sheetRow("/pedidos", "Receipt", "Mis pedidos", estaActivo(path, "/pedidos"));
+    cuentaRows +=
+      '<a href="/recargar" data-nav data-sheet-close class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors ' +
+      (estaActivo(path, "/recargar") ? "bg-secondary text-foreground" : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground") + '">' +
+      icon("Wallet", "h-5 w-5", 2) + '<span class="flex-1">Saldo</span>' +
+      '<span class="text-xs font-semibold text-[var(--signature)]">' + formatearPrecio(DB.saldoDe(user.email)) + "</span></a>";
     cuentaRows +=
       '<button data-action="logout" data-sheet-close class="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-[var(--destructive)] transition-colors hover:bg-[var(--destructive)]/10">' +
       icon("LogOut", "h-5 w-5") + "<span>Cerrar sesión</span></button>";

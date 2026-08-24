@@ -1,5 +1,6 @@
 // ============================================================================
-// pages-cuenta.js — Favoritos, comparador, garaje, carrito + checkout.
+// pages-cuenta.js — Favoritos, comparador, garaje, carrito + checkout y
+// recarga del saldo interno de la cuenta.
 // ============================================================================
 "use strict";
 
@@ -326,6 +327,13 @@ function pageCarrito() {
           '<p class="text-right text-[10px] text-muted-foreground">Cuota inicial:<br>' + formatearPrecio(Math.round(inicial)) + "</p>" +
           "</div>"
         : "") +
+      (Auth.isAuthenticated()
+        ? '<div class="mt-4 flex items-center justify-between gap-3 rounded-xl border border-border/60 bg-secondary/30 px-3.5 py-3 text-xs">' +
+          '<span class="flex items-center gap-1.5 text-muted-foreground">' + icon("Wallet", "h-3.5 w-3.5") + "Tu saldo</span>" +
+          '<span class="flex items-center gap-2"><span class="font-semibold text-foreground">' + formatearPrecio(DB.saldoDe(Auth.user().email)) + "</span>" +
+          '<a href="/recargar" data-nav class="font-medium text-[var(--signature)] transition-colors hover:text-foreground">Recargar</a></span>' +
+          "</div>"
+        : "") +
       '<button data-action="abrir-checkout" class="group mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 text-sm font-semibold text-primary-foreground transition-all hover:gap-3 hover:shadow-[0_8px_30px_-8px_oklch(0.98_0_0/0.35)] active:scale-[0.99]">Finalizar compra ' +
       icon("ArrowRight", "h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5") +
       "</button>" +
@@ -383,10 +391,12 @@ function borrarBorradorCheckout() {
 const checkoutState = {
   abierto: false,
   paso: "datos",
+  metodo: "tarjeta", // "tarjeta" | "saldo"
   datos: { nombre: "", email: "", telefono: "" },
   pago: { tarjeta: "", vencimiento: "", cvv: "", nombreTarjeta: "" },
   mensajeError: "",
   numeroPedido: "",
+  metodoExito: "tarjeta",
 };
 
 function fmtTarjeta(v) {
@@ -420,13 +430,74 @@ function datosValidos() {
   const d = checkoutState.datos;
   return d.nombre.trim().length > 2 && /\S+@\S+\.\S+/.test(d.email) && d.telefono.trim().length >= 7;
 }
+function totalCarrito() {
+  return Tienda.estado.carrito
+    .map((id) => DB.vehiculo(id))
+    .filter(Boolean)
+    .reduce((s, v) => s + v.precio, 0);
+}
 function pagoValido() {
+  if (checkoutState.metodo === "saldo") {
+    const u = Auth.user();
+    return !!u && DB.saldoDe(u.email) >= totalCarrito();
+  }
   const p = checkoutState.pago;
   return (
     p.tarjeta.replace(/\D/g, "").length === 16 &&
     /^\d{2}\/\d{2}$/.test(p.vencimiento) &&
     p.cvv.length >= 3 &&
     p.nombreTarjeta.trim().length > 2
+  );
+}
+
+// Selector de método de pago (tarjeta / saldo interno) del paso "pago".
+function selectorMetodoHtml(metodoActivo) {
+  const opciones = [
+    ["tarjeta", "CreditCard", "Tarjeta"],
+    ["saldo", "Wallet", "Saldo LUXICAR"],
+  ];
+  return (
+    '<div class="grid grid-cols-2 gap-2" role="group" aria-label="Método de pago">' +
+    opciones.map((o) => {
+      const activo = metodoActivo === o[0];
+      return (
+        '<button type="button" data-action="checkout-metodo" data-metodo="' + o[0] + '" aria-pressed="' + activo + '" class="flex items-center justify-center gap-2 rounded-xl border px-3 py-3 text-sm font-semibold transition-colors ' +
+        (activo
+          ? "border-foreground/40 bg-secondary text-foreground"
+          : "border-border/60 bg-background text-muted-foreground hover:bg-secondary/50 hover:text-foreground") + '">' +
+        icon(o[1], "h-4 w-4", 2) + "<span>" + o[2] + "</span>" +
+        (activo ? icon("Check", "h-3.5 w-3.5 text-[var(--signature)]", 2.5) : "") +
+        "</button>"
+      );
+    }).join("") +
+    "</div>"
+  );
+}
+
+// Panel informativo cuando se paga con el saldo de la cuenta.
+function panelSaldoHtml(total) {
+  const u = Auth.user();
+  const saldo = u ? DB.saldoDe(u.email) : 0;
+  const falta = total - saldo;
+  const suficiente = falta <= 0;
+  return (
+    '<div class="space-y-3 rounded-xl border border-border/70 bg-secondary/30 p-4">' +
+    '<div class="flex items-center justify-between text-sm">' +
+    '<span class="flex items-center gap-1.5 text-muted-foreground">' + icon("Wallet", "h-3.5 w-3.5") + "Saldo disponible</span>" +
+    '<span class="font-semibold text-foreground">' + formatearPrecio(saldo) + "</span></div>" +
+    '<div class="flex items-center justify-between text-sm">' +
+    '<span class="text-muted-foreground">Total a pagar</span>' +
+    '<span class="font-semibold text-foreground">' + formatearPrecio(total) + "</span></div>" +
+    '<div class="flex items-center justify-between border-t border-border/60 pt-3 text-sm">' +
+    (suficiente
+      ? '<span class="text-muted-foreground">Saldo restante</span><span class="font-semibold text-[var(--success)]">' + formatearPrecio(saldo - total) + "</span>"
+      : '<span class="text-muted-foreground">Te faltan</span><span class="font-semibold text-[var(--destructive)]">' + formatearPrecio(falta) + "</span>") +
+    "</div>" +
+    (suficiente
+      ? ""
+      : '<a href="/recargar" data-nav data-action="checkout-cerrar" class="flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90">' +
+        icon("Plus", "h-4 w-4") + "Recargar saldo</a>") +
+    "</div>"
   );
 }
 
@@ -510,6 +581,7 @@ function checkoutContenidoHtml() {
     const numTarjeta = s.pago.tarjeta || "•••• •••• •••• ••••";
     const titular = s.pago.nombreTarjeta ? s.pago.nombreTarjeta.toUpperCase() : "NOMBRE DEL TITULAR";
     const venc = s.pago.vencimiento || "MM/AA";
+    const conSaldo = s.metodo === "saldo";
     return (
       '<div class="px-6 pb-3 pt-6">' +
       '<h2 class="text-xl font-semibold tracking-tight text-foreground">Datos de pago</h2>' +
@@ -517,28 +589,31 @@ function checkoutContenidoHtml() {
       "</div>" +
       indicadorPasosHtml(2) +
       '<div class="space-y-4 px-6 py-5">' +
-      '<div class="relative overflow-hidden rounded-xl border border-border/70 bg-gradient-to-br from-secondary to-accent/40 p-5">' +
-      '<div class="flex items-center justify-between">' +
-      '<div class="h-8 w-11 rounded-md bg-primary/80"></div>' +
-      icon("CreditCard", "h-6 w-6 text-muted-foreground", 1.5) +
-      "</div>" +
-      '<p class="mt-5 font-mono text-base tracking-wider text-foreground">' + esc(numTarjeta) + "</p>" +
-      '<div class="mt-4 flex items-center justify-between text-xs font-medium text-muted-foreground">' +
-      "<span>" + esc(titular) + "</span><span>" + esc(venc) + "</span>" +
-      "</div></div>" +
-      campoCheckout({ id: "co-tarjeta", label: "Número de tarjeta", icono: "CreditCard", inputmode: "numeric", placeholder: "4242 4242 4242 4242", value: s.pago.tarjeta, field: "tarjeta", error: errores.tarjeta }) +
-      '<div class="grid grid-cols-2 gap-3">' +
-      campoCheckout({ id: "co-vencimiento", label: "Vencimiento", icono: "Calendar", inputmode: "numeric", placeholder: "MM/AA", value: s.pago.vencimiento, field: "vencimiento", error: errores.vencimiento }) +
-      campoCheckout({ id: "co-cvv", label: "CVV", icono: "Lock", inputmode: "numeric", placeholder: "123", value: s.pago.cvv, field: "cvv", error: errores.cvv }) +
-      "</div>" +
-      campoCheckout({ id: "co-titular", label: "Titular de la tarjeta", icono: "User", placeholder: "Juan Pérez", value: s.pago.nombreTarjeta, field: "nombreTarjeta", error: errores.nombreTarjeta }) +
+      selectorMetodoHtml(s.metodo) +
+      (conSaldo
+        ? panelSaldoHtml(total)
+        : '<div class="relative overflow-hidden rounded-xl border border-border/70 bg-gradient-to-br from-secondary to-accent/40 p-5">' +
+          '<div class="flex items-center justify-between">' +
+          '<div class="h-8 w-11 rounded-md bg-primary/80"></div>' +
+          icon("CreditCard", "h-6 w-6 text-muted-foreground", 1.5) +
+          "</div>" +
+          '<p class="mt-5 font-mono text-base tracking-wider text-foreground">' + esc(numTarjeta) + "</p>" +
+          '<div class="mt-4 flex items-center justify-between text-xs font-medium text-muted-foreground">' +
+          "<span>" + esc(titular) + "</span><span>" + esc(venc) + "</span>" +
+          "</div></div>" +
+          campoCheckout({ id: "co-tarjeta", label: "Número de tarjeta", icono: "CreditCard", inputmode: "numeric", placeholder: "4242 4242 4242 4242", value: s.pago.tarjeta, field: "tarjeta", error: errores.tarjeta }) +
+          '<div class="grid grid-cols-2 gap-3">' +
+          campoCheckout({ id: "co-vencimiento", label: "Vencimiento", icono: "Calendar", inputmode: "numeric", placeholder: "MM/AA", value: s.pago.vencimiento, field: "vencimiento", error: errores.vencimiento }) +
+          campoCheckout({ id: "co-cvv", label: "CVV", icono: "Lock", inputmode: "numeric", placeholder: "123", value: s.pago.cvv, field: "cvv", error: errores.cvv }) +
+          "</div>" +
+          campoCheckout({ id: "co-titular", label: "Titular de la tarjeta", icono: "User", placeholder: "Juan Pérez", value: s.pago.nombreTarjeta, field: "nombreTarjeta", error: errores.nombreTarjeta })) +
       "</div>" +
       resumenCompraHtml() +
       '<div class="flex gap-3 px-6 pb-6 pt-4">' +
       '<button data-action="checkout-paso-datos" class="flex items-center gap-1.5 rounded-xl border border-border bg-card px-5 py-3.5 text-sm font-semibold text-foreground transition-colors hover:bg-accent">' +
       icon("ArrowLeft", "h-4 w-4") + "Atrás</button>" +
       '<button data-action="checkout-pagar" ' + (pagoValido() ? "" : "disabled ") + 'class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40">' +
-      icon("Lock", "h-4 w-4", 2.2) + "Pagar " + formatearPrecio(total) +
+      icon(conSaldo ? "Wallet" : "Lock", "h-4 w-4", 2.2) + "Pagar " + formatearPrecio(total) +
       "</button></div>"
     );
   }
@@ -587,7 +662,11 @@ function checkoutContenidoHtml() {
       '<div class="flex items-center justify-between text-sm"><span class="text-muted-foreground">Nº de pedido</span><span class="font-mono text-xs font-semibold text-foreground">' + esc(s.numeroPedido) + "</span></div>" +
       '<div class="flex items-center justify-between text-sm"><span class="text-muted-foreground">Fecha de entrega</span><span class="font-semibold text-foreground">Inmediata</span></div>' +
       '<div class="flex items-center justify-between text-sm"><span class="text-muted-foreground">Vehículos</span><span class="font-semibold text-foreground">' + slugs.length + "</span></div>" +
-      '<div class="flex items-center justify-between text-sm"><span class="text-muted-foreground">Método de pago</span><span class="font-mono text-xs font-semibold text-foreground">•••• ' + esc(ultimos4 || "****") + "</span></div>" +
+      '<div class="flex items-center justify-between text-sm"><span class="text-muted-foreground">Método de pago</span><span class="text-xs font-semibold text-foreground">' +
+      (checkoutState.metodoExito === "saldo"
+        ? "Saldo LUXICAR"
+        : '<span class="font-mono">•••• ' + esc(ultimos4 || "****") + "</span>") +
+      "</span></div>" +
       '<div class="flex items-center justify-between border-t border-border/60 pt-2.5 text-sm"><span class="text-muted-foreground">Total pagado</span><span class="text-lg font-semibold tracking-tight text-foreground">' + formatearPrecio(checkoutState.totalExito || 0) + "</span></div>" +
       "</div>" +
       '<p class="mx-6 mt-4 text-center text-xs italic leading-relaxed text-muted-foreground">Gracias por confiar en Digital Marketplace.</p>' +
@@ -624,7 +703,7 @@ function renderCheckoutModal() {
   document.body.classList.add("no-scroll");
   root.innerHTML =
     '<div class="modal-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" data-action="checkout-overlay">' +
-    '<div class="modal-content max-h-[90vh] w-full max-w-[calc(100%-2rem)] overflow-y-auto rounded-lg border border-border/70 bg-card shadow-lg sm:max-w-md" role="dialog" aria-modal="true">' +
+    '<div class="modal-content max-h-[85vh] w-full max-w-[calc(100%-2rem)] overflow-y-auto rounded-lg border border-border/70 bg-card shadow-lg sm:max-w-md" role="dialog" aria-modal="true">' +
     (checkoutState.paso !== "procesando"
       ? '<button data-action="checkout-cerrar" class="absolute right-4 top-4 z-10 rounded-xs opacity-70 transition-opacity hover:opacity-100" aria-label="Cerrar">' + icon("X", "h-4 w-4") + "</button>"
       : "") +
@@ -682,8 +761,10 @@ function abrirCheckout(datosIniciales) {
 
   checkoutState.abierto = true;
   checkoutState.paso = "datos";
+  checkoutState.metodo = "tarjeta";
   checkoutState.mensajeError = "";
   checkoutState.numeroPedido = "";
+  checkoutState.metodoExito = "tarjeta";
   checkoutState.pago = { tarjeta: "", vencimiento: "", cvv: "", nombreTarjeta: "" };
   const u = Auth.user();
   checkoutState.datos = datosIniciales || {
@@ -699,6 +780,7 @@ function cerrarCheckout() {
   renderCheckoutModal();
   setTimeout(() => {
     checkoutState.paso = "datos";
+    checkoutState.metodo = "tarjeta";
     checkoutState.mensajeError = "";
     checkoutState.datos = { nombre: "", email: "", telefono: "" };
     checkoutState.pago = { tarjeta: "", vencimiento: "", cvv: "", nombreTarjeta: "" };
@@ -717,9 +799,10 @@ function checkoutPagar() {
   renderCheckoutModal();
   const slugs = Tienda.estado.carrito.slice();
   const total = slugs.map((id) => DB.vehiculo(id)).filter(Boolean).reduce((s, v) => s + v.precio, 0);
+  const metodo = checkoutState.metodo;
   setTimeout(() => {
     const u = Auth.user();
-    const res = DB.checkout(slugs, u.email);
+    const res = DB.checkout(slugs, u.email, metodo === "saldo" ? "SALDO" : "CARD");
     if (!res.ok) {
       checkoutState.mensajeError = res.error || "No se pudo completar la compra.";
       checkoutState.paso = "error";
@@ -729,6 +812,7 @@ function checkoutPagar() {
     checkoutState.numeroPedido = res.orderNumber || "—";
     checkoutState.vehiculosExito = slugs;
     checkoutState.totalExito = total;
+    checkoutState.metodoExito = metodo;
     Tienda.finalizarCompra();
     borrarBorradorCheckout();
     checkoutState.paso = "exito";
@@ -759,4 +843,153 @@ function pageGracias() {
     '<p class="pb-16 text-center text-xs text-muted-foreground">Digital Marketplace · Vehículos de Alta Gama</p>';
 
   return { title: "Gracias por tu compra · Digital Marketplace", html: siteShell("/gracias", html) };
+}
+
+// ---------------------------------------------------------------------------
+// RECARGAR SALDO (moneda interna de la tienda, por cuenta)
+// ---------------------------------------------------------------------------
+const RECARGA_MONTOS = [10000, 50000, 100000, 250000];
+const RECARGA_MAX = 10000000;
+const recargaState = { monto: 0, procesando: false };
+
+function confirmarRecarga() {
+  const u = Auth.user();
+  if (!u || recargaState.procesando) return;
+  const monto = recargaState.monto;
+  if (!Number.isFinite(monto) || monto <= 0) {
+    toast("Importe no válido", "Selecciona o introduce un importe mayor que cero.");
+    return;
+  }
+  if (monto > RECARGA_MAX) {
+    toast("Importe demasiado alto", "El máximo por recarga es " + formatearPrecio(RECARGA_MAX) + ".");
+    return;
+  }
+  const email = u.email;
+  recargaState.procesando = true;
+  rerender(true);
+  setTimeout(() => {
+    recargaState.procesando = false;
+    const actual = Auth.user();
+    if (!actual || actual.email !== email) return; // la sesión cambió durante la recarga
+    const res = DB.recargarSaldo(email, monto);
+    if (!res.ok) {
+      toast("No se pudo completar la recarga", res.error);
+      rerender(true);
+      return;
+    }
+    recargaState.monto = 0;
+    toast("Recarga completada", "Se han añadido " + formatearPrecio(monto) + " a tu saldo LUXICAR.");
+    rerender(true);
+  }, 900);
+}
+
+function pageRecargar() {
+  if (!Auth.isAuthenticated()) {
+    return { redirect: "/login?redirect=/recargar" };
+  }
+  const user = Auth.user();
+  const saldo = DB.saldoDe(user.email);
+  const movimientos = DB.movimientosSaldoDe(user.email).slice(0, 8);
+  const procesando = recargaState.procesando;
+  const monto = recargaState.monto;
+
+  const chipsHtml = RECARGA_MONTOS.map((m) => {
+    const activo = monto === m;
+    return (
+      '<button type="button" data-action="recarga-chip" data-monto="' + m + '" data-recarga-chip class="rounded-xl border px-3 py-3 text-sm font-semibold transition-colors ' +
+      (activo
+        ? "border-foreground/40 bg-secondary text-foreground"
+        : "border-border/60 bg-background text-muted-foreground hover:bg-secondary/50 hover:text-foreground") + '">' +
+      formatearPrecio(m) +
+      "</button>"
+    );
+  }).join("");
+
+  const movimientosHtml = movimientos.length === 0
+    ? '<div class="flex flex-col items-center py-10 text-center">' +
+      icon("Wallet", "h-10 w-10 text-muted-foreground/40", 1.5) +
+      '<p class="mt-4 text-sm text-muted-foreground">Aún no hay movimientos en tu saldo.</p></div>'
+    : '<ul class="mt-5 divide-y divide-border/40">' +
+      movimientos.map((m) => {
+        const esRecarga = m.tipo === "RECARGA";
+        return (
+          '<li class="flex items-center gap-3 py-3.5">' +
+          '<span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ' +
+          (esRecarga ? "bg-[var(--success)]/15 text-[var(--success)]" : "bg-[var(--signature)]/15 text-[var(--signature)]") + '">' +
+          icon(esRecarga ? "TrendingUp" : "ShoppingBag", "h-4 w-4", 2) + "</span>" +
+          '<div class="min-w-0 flex-1">' +
+          '<p class="truncate text-sm font-medium text-foreground">' + (esRecarga ? "Recarga de saldo" : esc(m.detalle || "Compra con saldo")) + "</p>" +
+          '<p class="mt-0.5 text-xs text-muted-foreground">' + formatearFechaCorta(m.createdAt) + "</p>" +
+          "</div>" +
+          '<span class="text-sm font-semibold tabular-nums ' + (esRecarga ? "text-[var(--success)]" : "text-foreground") + '">' +
+          (esRecarga ? "+" : "") + formatearPrecio(m.monto) + "</span>" +
+          "</li>"
+        );
+      }).join("") +
+      "</ul>";
+
+  const html =
+    '<div class="mx-auto max-w-4xl px-4 pb-20 pt-14 sm:px-6 sm:pt-20 lg:px-8">' +
+    '<div class="anim-in border-b border-border/40 pb-10" style="--dur:0.5s">' +
+    '<p class="text-eyebrow text-[11px] text-[var(--signature)]">Monedero</p>' +
+    '<h1 class="text-display mt-5 text-4xl text-foreground sm:text-5xl">Recargar saldo</h1>' +
+    '<p class="mt-3 max-w-xl text-sm text-muted-foreground">Añade saldo a tu cuenta y úsalo como método de pago al finalizar tus compras.</p>' +
+    "</div>" +
+    '<section class="anim-in mt-8 rounded-2xl border border-border/50 bg-card p-6 shadow-card sm:p-7" style="--delay:0.05s">' +
+    '<div class="flex flex-wrap items-start justify-between gap-4">' +
+    "<div>" +
+    '<p class="text-eyebrow text-[11px] text-[var(--signature)]">Saldo LUXICAR</p>' +
+    '<p class="mt-3 text-4xl font-semibold tracking-tight text-foreground tabular-nums sm:text-5xl">' + formatearPrecio(saldo) + "</p>" +
+    '<p class="mt-2 text-sm text-muted-foreground">Moneda interna de la tienda · sin caducidad</p>' +
+    "</div>" +
+    '<span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[var(--signature)]/15 text-[var(--signature)]">' +
+    icon("Wallet", "h-6 w-6", 1.8) + "</span>" +
+    "</div></section>" +
+    '<section class="anim-in mt-6 rounded-2xl border border-border/50 bg-card p-6 shadow-card sm:p-7" style="--delay:0.1s">' +
+    '<h2 class="text-lg font-semibold tracking-tight text-foreground">Recargar saldo</h2>' +
+    '<p class="mt-1 text-sm text-muted-foreground">Elige un importe o escribe el tuyo. Recarga simulada: no se realiza ningún cargo real.</p>' +
+    '<div class="mt-5 grid grid-cols-2 gap-2 lg:grid-cols-4">' + chipsHtml + "</div>" +
+    '<div class="mt-4">' +
+    '<label class="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-muted-foreground" for="recarga-custom">Importe personalizado</label>' +
+    '<div class="relative">' +
+    icon("DollarSign", "pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground") +
+    '<input id="recarga-custom" type="text" inputmode="numeric" placeholder="Ej. 75000" value="' + (monto ? monto : "") + '" autocomplete="off" class="h-11 w-full rounded-xl border border-border bg-background pl-10 pr-4 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-foreground/30 focus:ring-2 focus:ring-ring/30">' +
+    "</div></div>" +
+    '<button id="recarga-btn" data-action="recarga-confirmar" ' + (monto > 0 && !procesando ? "" : "disabled ") + 'class="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40">' +
+    (procesando
+      ? icon("Loader2", "h-4 w-4 animate-spin") + "<span>Procesando recarga…</span>"
+      : icon("Plus", "h-4 w-4") + "<span>Recargar saldo</span>") +
+    "</button>" +
+    '<p class="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">' + icon("ShieldCheck", "h-3.5 w-3.5 text-[var(--success)]", 2.2) + "El saldo está disponible como método de pago en el checkout.</p>" +
+    "</section>" +
+    '<section class="anim-in mt-6 rounded-2xl border border-border/50 bg-card p-6 shadow-card sm:p-7" style="--delay:0.15s">' +
+    '<h2 class="text-lg font-semibold tracking-tight text-foreground">Movimientos recientes</h2>' +
+    movimientosHtml +
+    "</section>" +
+    "</div>";
+
+  return {
+    title: "Recargar saldo · Digital Marketplace",
+    html: siteShell("/recargar", html),
+    mount() {
+      const input = document.getElementById("recarga-custom");
+      const btn = document.getElementById("recarga-btn");
+      if (!input || !btn) return;
+      input.addEventListener("input", () => {
+        const limpio = input.value.replace(/\D/g, "").slice(0, 8);
+        if (input.value !== limpio) input.value = limpio;
+        recargaState.monto = limpio ? parseInt(limpio, 10) : 0;
+        btn.disabled = recargaState.monto <= 0 || recargaState.procesando;
+        document.querySelectorAll("[data-recarga-chip]").forEach((el) => {
+          const esActivo = Number(el.getAttribute("data-monto")) === recargaState.monto;
+          el.classList.toggle("border-foreground/40", esActivo);
+          el.classList.toggle("bg-secondary", esActivo);
+          el.classList.toggle("text-foreground", esActivo);
+          el.classList.toggle("border-border/60", !esActivo);
+          el.classList.toggle("bg-background", !esActivo);
+          el.classList.toggle("text-muted-foreground", !esActivo);
+        });
+      });
+    },
+  };
 }

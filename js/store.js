@@ -190,6 +190,7 @@ const DB = (function () {
   const KEY_USUARIOS = "luxicar-users";
   const KEY_FAVORITOS = "luxicar-favorites";
   const KEY_EVENTOS = "luxicar-events";
+  const KEY_SALDOS = "luxicar-balances";
 
   function init(key, seedValue) {
     let v = lsGet(key, null);
@@ -209,6 +210,7 @@ const DB = (function () {
   })());
   const usuarios = init(KEY_USUARIOS, SEED.usuarios);
   const favoritosCuentas = init(KEY_FAVORITOS, SEED.favoritos);
+  const saldos = init(KEY_SALDOS, {});
   const eventos = init(KEY_EVENTOS, (function () {
     const completados = SEED.pedidos.filter((p) => p.status === "COMPLETED").length;
     return { VEHICLE_VIEWED: 201, CART_ADDED: 40, PURCHASE_COMPLETED: completados };
@@ -219,6 +221,17 @@ const DB = (function () {
   function guardarInventario() { lsSet(KEY_INVENTARIO, inventario); }
   function guardarUsuarios() { lsSet(KEY_USUARIOS, usuarios); }
   function guardarFavoritos() { lsSet(KEY_FAVORITOS, favoritosCuentas); }
+  function guardarSaldos() { lsSet(KEY_SALDOS, saldos); }
+
+  // Saldo de moneda interna por cuenta (recargable en /recargar, gastable en
+  // el checkout). Se guarda aparte de los usuarios para no tocar su formato.
+  function cuentaSaldo(email) {
+    if (!saldos[email]) {
+      saldos[email] = { balance: 0, movimientos: [] };
+      guardarSaldos();
+    }
+    return saldos[email];
+  }
 
   return {
     // --- Catálogo ---
@@ -278,11 +291,13 @@ const DB = (function () {
     },
     /**
      * Checkout transaccional local (equivale a data/orders.ts::checkout):
-     * valida disponibilidad/stock, congela el precio, crea el pedido
-     * COMPLETED y decrementa el inventario.
+     * valida disponibilidad/stock, congela el precio, cobra con tarjeta
+     * (simulado) o con el saldo de la cuenta, crea el pedido COMPLETED
+     * y decrementa el inventario.
      */
-    checkout(slugs, userEmail) {
+    checkout(slugs, userEmail, metodoPago) {
       if (!slugs.length) return { ok: false, error: "El carrito está vacío" };
+      metodoPago = metodoPago === "SALDO" ? "SALDO" : "CARD";
       const items = [];
       for (const slug of slugs) {
         const v = this.vehiculo(slug);
@@ -305,12 +320,19 @@ const DB = (function () {
       }
       const total = items.reduce((s, it) => s + it.priceAtPurchase * it.quantity, 0);
       const number = this.siguienteNumeroPedido();
+      if (metodoPago === "SALDO") {
+        const cobro = this.gastarSaldo(userEmail, total, "Pedido " + number);
+        if (!cobro.ok) {
+          return { ok: false, error: "Saldo insuficiente para completar la compra. Recarga tu saldo o paga con tarjeta." };
+        }
+      }
       const pedido = {
         id: number,
         number,
         userEmail,
         status: "COMPLETED",
         total,
+        paymentMethod: metodoPago,
         createdAt: new Date().toISOString(),
         items,
       };
@@ -377,6 +399,48 @@ const DB = (function () {
     setFavoritosDe(email, slugs) {
       favoritosCuentas[email] = Array.from(new Set(slugs));
       guardarFavoritos();
+    },
+    // --- Saldo de moneda interna (por cuenta) ---
+    saldoDe(email) {
+      return cuentaSaldo(email).balance;
+    },
+    movimientosSaldoDe(email) {
+      return cuentaSaldo(email).movimientos.slice();
+    },
+    recargarSaldo(email, monto) {
+      monto = Math.round(Number(monto));
+      if (!Number.isFinite(monto) || monto <= 0) {
+        return { ok: false, error: "Introduce un importe válido mayor que cero" };
+      }
+      if (monto > 10000000) {
+        return { ok: false, error: "El importe máximo por recarga es " + formatearPrecio(10000000) };
+      }
+      const c = cuentaSaldo(email);
+      c.balance += monto;
+      c.movimientos.unshift({
+        id: "mov-" + Date.now().toString(36),
+        tipo: "RECARGA",
+        monto,
+        createdAt: new Date().toISOString(),
+      });
+      c.movimientos = c.movimientos.slice(0, 50);
+      guardarSaldos();
+      return { ok: true, balance: c.balance };
+    },
+    gastarSaldo(email, monto, detalle) {
+      const c = cuentaSaldo(email);
+      if (c.balance < monto) return { ok: false, error: "Saldo insuficiente" };
+      c.balance -= monto;
+      c.movimientos.unshift({
+        id: "mov-" + Date.now().toString(36),
+        tipo: "COMPRA",
+        monto: -monto,
+        detalle: detalle || "",
+        createdAt: new Date().toISOString(),
+      });
+      c.movimientos = c.movimientos.slice(0, 50);
+      guardarSaldos();
+      return { ok: true, balance: c.balance };
     },
     // --- Eventos de analítica ---
     trackEvent(tipo) {

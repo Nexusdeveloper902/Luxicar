@@ -18,6 +18,7 @@ const ROUTES = [
   { pattern: /^\/registro$/, page: (m, p) => pageRegistro(p) },
   { pattern: /^\/perfil$/, page: () => pagePerfil() },
   { pattern: /^\/pedidos$/, page: () => pagePedidos() },
+  { pattern: /^\/recargar$/, page: () => pageRecargar() },
   { pattern: /^\/admin$/, page: () => pageAdmin() },
   { pattern: /^\/admin\/login$/, page: () => pageAdminLogin() },
   { pattern: /^\/privacidad$/, page: () => pagePrivacidad() },
@@ -261,6 +262,15 @@ const ACTIONS = {
     renderCheckoutModal();
   },
   "checkout-pagar": () => checkoutPagar(),
+  "checkout-metodo": (el) => {
+    checkoutState.metodo = el.getAttribute("data-metodo") === "saldo" ? "saldo" : "tarjeta";
+    renderCheckoutModal();
+  },
+  "recarga-chip": (el) => {
+    recargaState.monto = parseInt(el.getAttribute("data-monto"), 10) || 0;
+    rerender(true);
+  },
+  "recarga-confirmar": () => confirmarRecarga(),
   "pedido-detalle": (el) => abrirPedidoModal(el.getAttribute("data-number")),
   "pedido-cerrar": (el, ev) => {
     if (el.hasAttribute("data-stop")) return;

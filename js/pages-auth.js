@@ -359,6 +359,16 @@ function pagePerfil() {
     '<button data-action="logout-home" class="inline-flex items-center justify-center gap-2 rounded-xl border border-border/70 px-4 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">' +
     icon("LogOut", "h-4 w-4") + "Cerrar sesión</button>" +
     "</div></div>" +
+    '<section class="anim-in mt-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border/50 bg-card p-5 shadow-card sm:p-7" style="--delay:0.15s">' +
+    '<div class="flex items-center gap-4">' +
+    '<span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--signature)]/15 text-[var(--signature)]">' + icon("Wallet", "h-5 w-5", 2) + "</span>" +
+    "<div>" +
+    '<p class="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Saldo disponible</p>' +
+    '<p class="mt-0.5 text-2xl font-semibold tracking-tight text-foreground tabular-nums">' + formatearPrecio(DB.saldoDe(user.email)) + "</p>" +
+    "</div></div>" +
+    '<a href="/recargar" data-nav class="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90">Recargar saldo ' +
+    icon("ArrowRight", "h-4 w-4") + "</a>" +
+    "</section>" +
     '<div class="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">' + kpisHtml + "</div>" +
     '<div class="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-3">' +
     '<section class="anim-in rounded-2xl border border-border/50 bg-card p-6 shadow-card lg:p-7" style="--delay:0.25s">' +
@@ -485,7 +495,11 @@ function abrirPedidoModal(number) {
       );
     }).join("") +
     "</div>" +
-    '<div class="mt-6 flex items-center justify-between border-t border-border/60 pt-4">' +
+    '<div class="mt-5 flex items-center gap-1.5 text-xs text-muted-foreground">' +
+    icon(o.paymentMethod === "SALDO" ? "Wallet" : "CreditCard", "h-3.5 w-3.5") +
+    (o.paymentMethod === "SALDO" ? "Pagado con saldo LUXICAR" : "Pagado con tarjeta") +
+    "</div>" +
+    '<div class="mt-4 flex items-center justify-between border-t border-border/60 pt-4">' +
     '<span class="text-sm font-medium text-muted-foreground">Total</span>' +
     '<span class="text-lg font-semibold text-foreground">' + formatearPrecio(o.total) + "</span>" +
     "</div></div></div>";

@@ -247,10 +247,10 @@ function grupoFiltro(etiqueta, chips) {
   );
 }
 
-function sliderGrupo(etiqueta, contenido) {
+function sliderGrupo(etiqueta, contenido, hook) {
   return (
     "<div>" +
-    '<p class="mb-2 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">' + etiqueta + "</p>" +
+    '<p class="mb-2 text-[11px] font-medium uppercase tracking-wider text-muted-foreground"' + (hook ? ' data-slider-label="' + hook + '"' : "") + ">" + etiqueta + "</p>" +
     contenido +
     "</div>"
   );
@@ -269,21 +269,96 @@ function filtrosPanelHtml() {
       "Precio: " + f.precioMin.toLocaleString("es-ES") + " - " + f.precioMax.toLocaleString("es-ES"),
       '<input type="range" class="slider-premium" min="' + PRECIO_MIN + '" max="' + PRECIO_MAX + '" step="5000" value="' + f.precioMin + '" data-filtro-range="precioMin" aria-label="Precio mínimo">' +
       '<input type="range" class="slider-premium" min="' + PRECIO_MIN + '" max="' + PRECIO_MAX + '" step="5000" value="' + f.precioMax + '" data-filtro-range="precioMax" aria-label="Precio máximo">' +
-      '<div class="flex items-center justify-between text-[11px] text-muted-foreground"><span>Mín: ' + f.precioMin.toLocaleString("es-ES") + '</span><span>Máx: ' + f.precioMax.toLocaleString("es-ES") + "</span></div>"
+      '<div class="flex items-center justify-between text-[11px] text-muted-foreground" data-slider-sub="precio"><span>Mín: ' + f.precioMin.toLocaleString("es-ES") + '</span><span>Máx: ' + f.precioMax.toLocaleString("es-ES") + "</span></div>",
+      "precio"
     ) +
     sliderGrupo(
       "Año: " + f.añoMin + " - " + f.añoMax,
       '<input type="range" class="slider-premium" min="' + AÑO_MIN + '" max="' + AÑO_MAX + '" step="1" value="' + f.añoMin + '" data-filtro-range="añoMin" aria-label="Año mínimo">' +
-      '<input type="range" class="slider-premium" min="' + AÑO_MIN + '" max="' + AÑO_MAX + '" step="1" value="' + f.añoMax + '" data-filtro-range="añoMax" aria-label="Año máximo">'
+      '<input type="range" class="slider-premium" min="' + AÑO_MIN + '" max="' + AÑO_MAX + '" step="1" value="' + f.añoMax + '" data-filtro-range="añoMax" aria-label="Año máximo">',
+      "año"
     ) +
     sliderGrupo(
       "Potencia mín: " + f.potenciaMin + " HP",
-      '<input type="range" class="slider-premium" min="0" max="' + POTENCIA_MAX + '" step="50" value="' + f.potenciaMin + '" data-filtro-range="potenciaMin" aria-label="Potencia mínima">'
+      '<input type="range" class="slider-premium" min="0" max="' + POTENCIA_MAX + '" step="50" value="' + f.potenciaMin + '" data-filtro-range="potenciaMin" aria-label="Potencia mínima">',
+      "potencia"
     ) +
     grupoFiltro("Combustible", COMBUSTIBLES.map((c) => chipFiltro("combustibles", c, f.combustibles.includes(c))).join("")) +
     grupoFiltro("Tracción", TRACCIONES.map((t) => chipFiltro("tracciones", t, f.tracciones.includes(t))).join("")) +
     "</div>"
   );
+}
+
+function marketplaceGridHtml(filtrados) {
+  return filtrados.length > 0
+    ? '<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 xl:gap-6">' +
+      filtrados.map((v, i) => vehicleCard(v, { etiquetaBoton: "Explorar vehículo", index: i })).join("") +
+      "</div>"
+    : '<div class="anim-in flex flex-col items-center justify-center rounded-2xl border border-dashed border-border py-20 text-center">' +
+      icon("Search", "h-8 w-8 text-muted-foreground", 1.5) +
+      '<p class="mt-4 text-lg font-medium text-foreground">No se encontraron vehículos</p>' +
+      '<p class="mt-1 text-sm text-muted-foreground">Prueba ajustando los filtros de búsqueda.</p>' +
+      '<button data-action="limpiar-filtros" class="mt-5 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90">Limpiar filtros</button>' +
+      "</div>";
+}
+
+// Clases de los chips (fuente única para generar y para alternar en sitio).
+const CHIP_ACTIVAS = ["border-transparent", "bg-primary", "text-primary-foreground"];
+const CHIP_MARCA_INACTIVAS = ["border-border", "bg-card", "text-muted-foreground", "hover:text-foreground"];
+const CHIP_FILTRO_INACTIVAS = ["border-border", "bg-secondary/50", "text-muted-foreground", "hover:text-foreground"];
+
+function setChipActivo(el, activo, inactivas) {
+  CHIP_ACTIVAS.forEach((c) => el.classList.toggle(c, activo));
+  inactivas.forEach((c) => el.classList.toggle(c, !activo));
+}
+
+/** Re-sincroniza todos los chips (marca y filtros) con el estado, en ambos paneles. */
+function sincronizarChipsMarketplace() {
+  document.querySelectorAll('[data-action="filtro-marca"]').forEach((el) => {
+    const valor = el.getAttribute("data-valor") || null;
+    setChipActivo(el, marketplaceState.filtros.marca === valor, CHIP_MARCA_INACTIVAS);
+  });
+  document.querySelectorAll('[data-action="filtro-chip"]').forEach((el) => {
+    const arr = marketplaceState.filtros[el.getAttribute("data-grupo")] || [];
+    setChipActivo(el, arr.includes(el.getAttribute("data-valor")), CHIP_FILTRO_INACTIVAS);
+  });
+}
+
+/** Actualiza etiquetas y valores de los sliders sin destruirlos (permite arrastrar). */
+function actualizarSlidersUI() {
+  const f = marketplaceState.filtros;
+  const fmt = (n) => n.toLocaleString("es-ES");
+  const sync = (key, val) => {
+    document.querySelectorAll('[data-filtro-range="' + key + '"]').forEach((r) => { r.value = val; });
+  };
+  sync("precioMin", f.precioMin); sync("precioMax", f.precioMax);
+  sync("añoMin", f.añoMin); sync("añoMax", f.añoMax);
+  sync("potenciaMin", f.potenciaMin);
+  document.querySelectorAll('[data-slider-label="precio"]').forEach((el) => { el.textContent = "Precio: " + fmt(f.precioMin) + " - " + fmt(f.precioMax); });
+  document.querySelectorAll('[data-slider-sub="precio"]').forEach((el) => {
+    el.innerHTML = "<span>Mín: " + fmt(f.precioMin) + "</span><span>Máx: " + fmt(f.precioMax) + "</span>";
+  });
+  document.querySelectorAll('[data-slider-label="año"]').forEach((el) => { el.textContent = "Año: " + f.añoMin + " - " + f.añoMax; });
+  document.querySelectorAll('[data-slider-label="potencia"]').forEach((el) => { el.textContent = "Potencia mín: " + f.potenciaMin + " HP"; });
+}
+
+/** Re-render SOLO de la parrilla de resultados y los contadores del marketplace. */
+function actualizarMarketplace() {
+  const filtrados = marketplaceFiltrados();
+  const grid = document.getElementById("resultados");
+  if (grid) grid.innerHTML = marketplaceGridHtml(filtrados);
+  const cnt = document.getElementById("resultados-count");
+  if (cnt) cnt.textContent = filtrados.length + " resultado" + (filtrados.length === 1 ? "" : "s");
+  const limpiar = document.getElementById("limpiar-filtros-wrap");
+  if (limpiar) limpiar.classList.toggle("hidden", !hayFiltrosActivos());
+  const limpiarBusq = document.getElementById("limpiar-busqueda-btn");
+  if (limpiarBusq) limpiarBusq.classList.toggle("hidden", marketplaceState.busqueda === "");
+  initObservers();
+}
+
+/** Restablece el contenido de los paneles de filtros (móvil y escritorio). */
+function repintarPanelesFiltros() {
+  document.querySelectorAll("[data-filtros-panel]").forEach((c) => { c.innerHTML = filtrosPanelHtml(); });
 }
 
 function pageMarketplace() {
@@ -302,18 +377,6 @@ function pageMarketplace() {
     ).join("") +
     "</div>";
 
-  const grid =
-    filtrados.length > 0
-      ? '<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 xl:gap-6">' +
-        filtrados.map((v, i) => vehicleCard(v, { etiquetaBoton: "Explorar vehículo", index: i })).join("") +
-        "</div>"
-      : '<div class="anim-in flex flex-col items-center justify-center rounded-2xl border border-dashed border-border py-20 text-center">' +
-        icon("Search", "h-8 w-8 text-muted-foreground", 1.5) +
-        '<p class="mt-4 text-lg font-medium text-foreground">No se encontraron vehículos</p>' +
-        '<p class="mt-1 text-sm text-muted-foreground">Prueba ajustando los filtros de búsqueda.</p>' +
-        '<button data-action="limpiar-filtros" class="mt-5 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90">Limpiar filtros</button>' +
-        "</div>";
-
   const html =
     '<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">' +
     '<section class="hero-glow relative overflow-hidden rounded-3xl border border-border/50 px-6 py-16 sm:px-10 sm:py-20">' +
@@ -326,12 +389,10 @@ function pageMarketplace() {
     '<div class="relative flex-1">' +
     icon("Search", "pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground") +
     '<input id="busqueda" type="text" placeholder="Buscar por marca o modelo…" aria-label="Buscar vehículos" value="' + esc(marketplaceState.busqueda) + '" class="h-12 w-full rounded-xl border border-border bg-card pl-10 pr-10 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-foreground/30 focus:ring-2 focus:ring-ring/40">' +
-    (marketplaceState.busqueda
-      ? '<button data-action="limpiar-busqueda" class="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground" aria-label="Limpiar búsqueda">' + icon("X", "h-4 w-4") + "</button>"
-      : "") +
+    '<button data-action="limpiar-busqueda" id="limpiar-busqueda-btn" class="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground' + (marketplaceState.busqueda ? "" : " hidden") + '" aria-label="Limpiar búsqueda">' + icon("X", "h-4 w-4") + "</button>" +
     "</div>" +
     '<div class="flex items-center gap-2">' +
-    '<button data-action="toggle-panel-filtros" class="flex h-12 shrink-0 items-center gap-2 rounded-xl border px-3 text-sm font-medium transition-colors sm:px-4 lg:hidden ' +
+    '<button data-action="toggle-panel-filtros" id="toggle-panel-filtros-btn" class="flex h-12 shrink-0 items-center gap-2 rounded-xl border px-3 text-sm font-medium transition-colors sm:px-4 lg:hidden ' +
     (marketplaceState.panelAbierto ? "border-foreground/30 bg-secondary text-foreground" : "border-border bg-card text-muted-foreground") + '">' +
     icon("SlidersHorizontal", "h-4 w-4") + "<span>Filtros</span></button>" +
     '<div class="relative min-w-0 flex-1 sm:flex-none">' +
@@ -346,54 +407,23 @@ function pageMarketplace() {
     '<div class="flex items-center justify-between">' +
     '<div class="flex items-center gap-2 text-sm text-muted-foreground">' +
     icon("SlidersHorizontal", "h-4 w-4") +
-    "<span>" + filtrados.length + " resultado" + (filtrados.length === 1 ? "" : "s") + "</span>" +
+    '<span id="resultados-count">' + filtrados.length + " resultado" + (filtrados.length === 1 ? "" : "s") + "</span>" +
     "</div>" +
-    (hayFiltrosActivos()
-      ? '<button data-action="limpiar-filtros" class="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">' + icon("X", "h-3.5 w-3.5") + "Limpiar filtros</button>"
-      : "") +
+    '<span id="limpiar-filtros-wrap"' + (hayFiltrosActivos() ? "" : ' class="hidden"') + '>' +
+    '<button data-action="limpiar-filtros" class="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">' + icon("X", "h-3.5 w-3.5") + "Limpiar filtros</button>" +
+    "</span>" +
     "</div></section>" +
     '<div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[260px_1fr] lg:gap-8">' +
     '<div id="panel-filtros-movil" class="filtros-movil lg:hidden" style="height:' + (marketplaceState.panelAbierto ? "auto" : "0") + '">' +
-    (marketplaceState.panelAbierto ? filtrosPanelHtml() : "") +
+    '<div data-filtros-panel>' + (marketplaceState.panelAbierto ? filtrosPanelHtml() : "") + "</div>" +
     "</div>" +
-    '<aside class="hidden lg:block"><div class="sticky top-20">' + filtrosPanelHtml() + "</div></aside>" +
-    '<section class="pb-4">' + grid + "</section>" +
+    '<aside class="hidden lg:block"><div class="sticky top-20" data-filtros-panel>' + filtrosPanelHtml() + "</div></aside>" +
+    '<section class="pb-4" id="resultados">' + marketplaceGridHtml(filtrados) + "</section>" +
     "</div></div>";
 
-  return {
-    title: "Marketplace de vehículos · Digital Marketplace",
-    html: siteShell("/marketplace", html),
-    mount() {
-      const input = document.getElementById("busqueda");
-      if (input) {
-        input.addEventListener("input", () => {
-          marketplaceState.busqueda = input.value;
-          rerender(true);
-        });
-      }
-      const sel = document.getElementById("ordenamiento");
-      if (sel) {
-        sel.addEventListener("change", () => {
-          Tienda.setOrdenamiento(sel.value);
-          rerender(true);
-        });
-      }
-      document.querySelectorAll("[data-filtro-range]").forEach((r) => {
-        r.addEventListener("input", () => {
-          const key = r.getAttribute("data-filtro-range");
-          const val = parseInt(r.value, 10);
-          const f = marketplaceState.filtros;
-          f[key] = val;
-          // Restricciones cruzadas (min <= max)
-          if (key === "precioMin" && f.precioMin > f.precioMax) f.precioMax = f.precioMin;
-          if (key === "precioMax" && f.precioMax < f.precioMin) f.precioMin = f.precioMax;
-          if (key === "añoMin" && f.añoMin > f.añoMax) f.añoMax = f.añoMin;
-          if (key === "añoMax" && f.añoMax < f.añoMin) f.añoMin = f.añoMax;
-          rerender(true);
-        });
-      });
-    },
-  };
+  // Los controles (búsqueda, orden, sliders, chips) se manejan por delegación
+  // desde app.js y actualizan solo la parrilla: no hay listeners por montaje.
+  return { title: "Marketplace de vehículos · Digital Marketplace", html: siteShell("/marketplace", html) };
 }
 
 // ---------------------------------------------------------------------------
@@ -556,23 +586,7 @@ function pageVehiculo(slug) {
     ["Gauge", "Torque", formatearNumero(v.torque) + " Nm"],
   ];
 
-  let ctaCls, ctaHtml, ctaDisabled = false;
-  if (!disponible) {
-    ctaCls = "cursor-not-allowed border border-border/50 bg-secondary/40 text-muted-foreground";
-    ctaHtml = icon("Ban", "h-4 w-4", 2.2) + "<span>Vehículo agotado</span>";
-    ctaDisabled = true;
-  } else if (comprado) {
-    ctaCls = "cursor-default border border-border/50 bg-secondary/50 text-muted-foreground";
-    ctaHtml = icon("BadgeCheck", "h-4 w-4 text-[var(--success)]", 2.3) + "<span>Vehículo comprado</span>";
-    ctaDisabled = true;
-  } else if (enCarrito) {
-    ctaCls = "cursor-default border border-[var(--success)]/40 bg-[var(--success)]/10 text-[var(--success)]";
-    ctaHtml = icon("Check", "h-4 w-4", 2.5) + "<span>En el carrito</span>";
-    ctaDisabled = true;
-  } else {
-    ctaCls = "bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.99]";
-    ctaHtml = icon("ShoppingCart", "h-4 w-4", 2.2) + "<span>Agregar al carrito</span>";
-  }
+  const ctaBtn = carritoBtnHtml(v, nombre, true);
 
   const thumbs = v.imagenes.map((img, i) =>
     '<button data-action="galeria" data-index="' + i + '" class="relative aspect-[4/3] overflow-hidden rounded-xl border transition-all duration-200 ' +
@@ -644,15 +658,13 @@ function pageVehiculo(slug) {
     '<div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">' + specs + "</div>" +
     "</div>" +
     '<div class="anim-in mt-8" style="--dur:0.5s;--delay:0.25s" id="financing"></div>' +
-    '<div class="anim-in mt-8 flex flex-col gap-3" style="--dur:0.5s;--delay:0.3s">' +
-    "<button " + (ctaDisabled ? "disabled " : "") + 'data-action="add-carrito" data-slug="' + v.id + '" data-nombre="' + esc(nombre) + '" class="flex items-center justify-center gap-2 rounded-xl px-6 py-4 text-sm font-semibold transition-all duration-300 ' + ctaCls + '">' +
-    ctaHtml +
-    "</button>" +
+    '<div class="anim-in mt-8 flex flex-col gap-3" style="--dur:0.5s;--delay:0.3s" id="cta-acciones" data-slug="' + v.id + '">' +
+    ctaBtn +
     (enCarrito
-      ? '<a href="/carrito" data-nav class="rounded-xl border border-border bg-card px-6 py-4 text-center text-sm font-semibold text-foreground transition-colors hover:bg-accent">Ver carrito y finalizar compra</a>'
+      ? '<a href="/carrito" data-nav id="cta-ver-carrito" class="rounded-xl border border-border bg-card px-6 py-4 text-center text-sm font-semibold text-foreground transition-colors hover:bg-accent">Ver carrito y finalizar compra</a>'
       : "") +
     (comprado
-      ? '<a href="/garaje" data-nav class="rounded-xl border border-border bg-card px-6 py-4 text-center text-sm font-semibold text-foreground transition-colors hover:bg-accent">Ver en mi garaje</a>'
+      ? '<a href="/garaje" data-nav id="cta-ver-garaje" class="rounded-xl border border-border bg-card px-6 py-4 text-center text-sm font-semibold text-foreground transition-colors hover:bg-accent">Ver en mi garaje</a>'
       : "") +
     "</div>" +
     "</div></div>" +

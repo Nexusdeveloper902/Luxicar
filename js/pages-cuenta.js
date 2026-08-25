@@ -7,14 +7,13 @@
 // ---------------------------------------------------------------------------
 // FAVORITOS
 // ---------------------------------------------------------------------------
-function pageFavoritos() {
+function favoritosContenidoHtml() {
   const favoritos = Tienda.estado.favoritos
     .map((id) => DB.vehiculo(id))
     .filter(Boolean);
 
   const n = favoritos.length;
-  const html =
-    '<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">' +
+  return (
     pageHeaderHtml(
       "Tu selección personal",
       "Favoritos",
@@ -33,7 +32,21 @@ function pageFavoritos() {
           descripcion: "Toca el ícono de corazón en cualquier vehículo del marketplace para guardarlo en tu lista personal de favoritos.",
           ctaLabel: "Descubrir vehículos",
           ctaHref: "/marketplace",
-        })) +
+        }))
+  );
+}
+
+/** Re-render local de /favoritos al quitar un vehículo (sin tocar el resto). */
+function renderFavoritosContenido() {
+  const cont = document.getElementById("favoritos-contenido");
+  if (cont) cont.innerHTML = favoritosContenidoHtml();
+  initObservers();
+}
+
+function pageFavoritos() {
+  const html =
+    '<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" id="favoritos-contenido">' +
+    favoritosContenidoHtml() +
     "</div>";
 
   return { title: "Favoritos · Digital Marketplace", html: siteShell("/favoritos", html) };
@@ -58,7 +71,7 @@ const COMPARE_TEXTO = [
   ["categoria", "Categoría"],
 ];
 
-function pageComparar() {
+function compararContenidoHtml() {
   const vehiculos = Tienda.estado.comparar
     .map((id) => DB.vehiculo(id))
     .filter(Boolean);
@@ -161,15 +174,29 @@ function pageComparar() {
         : "");
   }
 
-  const html =
-    '<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">' +
+  return (
     pageHeaderHtml(
       "Análisis lado a lado",
       "Comparador de vehículos",
       "",
       n === 0 ? "Selecciona hasta 3 vehículos desde el marketplace para comparar sus características lado a lado y encontrar el ideal para ti." : ""
     ) +
-    '<section class="pb-4">' + contenido + "</section></div>";
+    '<section class="pb-4">' + contenido + "</section>"
+  );
+}
+
+/** Re-render local de /comparar al quitar/vaciar vehículos. */
+function renderCompararContenido() {
+  const cont = document.getElementById("comparar-contenido");
+  if (cont) cont.innerHTML = compararContenidoHtml();
+  initObservers();
+}
+
+function pageComparar() {
+  const html =
+    '<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" id="comparar-contenido">' +
+    compararContenidoHtml() +
+    "</div>";
 
   return { title: "Comparar vehículos · Digital Marketplace", html: siteShell("/comparar", html) };
 }
@@ -254,7 +281,7 @@ function pageGaraje() {
 // ---------------------------------------------------------------------------
 // CARRITO
 // ---------------------------------------------------------------------------
-function pageCarrito() {
+function carritoContenidoHtml() {
   const items = Tienda.estado.carrito
     .map((id) => DB.vehiculo(id))
     .filter(Boolean);
@@ -330,7 +357,7 @@ function pageCarrito() {
       (Auth.isAuthenticated()
         ? '<div class="mt-4 flex items-center justify-between gap-3 rounded-xl border border-border/60 bg-secondary/30 px-3.5 py-3 text-xs">' +
           '<span class="flex items-center gap-1.5 text-muted-foreground">' + icon("Wallet", "h-3.5 w-3.5") + "Tu saldo</span>" +
-          '<span class="flex items-center gap-2"><span class="font-semibold text-foreground">' + formatearPrecio(DB.saldoDe(Auth.user().email)) + "</span>" +
+          '<span class="flex items-center gap-2"><span data-saldo class="font-semibold text-foreground">' + formatearPrecio(DB.saldoDe(Auth.user().email)) + "</span>" +
           '<a href="/recargar" data-nav class="font-medium text-[var(--signature)] transition-colors hover:text-foreground">Recargar</a></span>' +
           "</div>"
         : "") +
@@ -346,15 +373,28 @@ function pageCarrito() {
       "</div></aside></div>";
   }
 
-  const html =
-    '<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">' +
+  return (
     pageHeaderHtml(
       "Tu selección",
       "Carrito de compras",
       n > 0 ? n + " vehículo" + (n === 1 ? " listo" : "s listos") + " para finalizar la compra." : "",
       n === 0 ? "Tu carrito está vacío. Explora el marketplace y añade los vehículos que más te gusten para comenzar tu colección." : ""
     ) +
-    contenido +
+    contenido
+  );
+}
+
+/** Re-render local de /carrito al quitar vehículos o completar la compra. */
+function renderCarritoContenido() {
+  const cont = document.getElementById("carrito-contenido");
+  if (cont) cont.innerHTML = carritoContenidoHtml();
+  initObservers();
+}
+
+function pageCarrito() {
+  const html =
+    '<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" id="carrito-contenido">' +
+    carritoContenidoHtml() +
     "</div>";
 
   return {
@@ -507,15 +547,19 @@ function campoCheckout(opts) {
     "<div>" +
     '<label class="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-muted-foreground" for="' + opts.id + '">' + opts.label + "</label>" +
     '<div class="relative">' +
-    icon(opts.icono, "pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 " + (error ? "text-[var(--destructive)]" : "text-muted-foreground")) +
+    '<span data-checkout-icon="' + opts.field + '" class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 ' + (error ? "text-[var(--destructive)]" : "text-muted-foreground") + '">' +
+    icon(opts.icono, "h-4 w-4") +
+    "</span>" +
     '<input id="' + opts.id + '" type="' + (opts.type || "text") + '" inputmode="' + (opts.inputmode || "text") + '" placeholder="' + esc(opts.placeholder) + '" value="' + esc(opts.value) + '" data-checkout-field="' + opts.field + '" autocomplete="off" class="h-11 w-full rounded-xl border bg-background pl-10 pr-4 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:ring-2 ' +
     (error
       ? "border-[var(--destructive)]/50 focus:border-[var(--destructive)] focus:ring-[var(--destructive)]/20"
       : "border-border focus:border-foreground/30 focus:ring-ring/30") + '">' +
     "</div>" +
+    '<div data-checkout-error="' + opts.field + '">' +
     (error
       ? '<p class="mt-1.5 flex items-center gap-1 text-[11px] text-[var(--destructive)]">' + icon("AlertCircle", "h-3 w-3") + esc(error) + "</p>"
       : "") +
+    "</div>" +
     "</div>"
   );
 }
@@ -597,9 +641,9 @@ function checkoutContenidoHtml() {
           '<div class="h-8 w-11 rounded-md bg-primary/80"></div>' +
           icon("CreditCard", "h-6 w-6 text-muted-foreground", 1.5) +
           "</div>" +
-          '<p class="mt-5 font-mono text-base tracking-wider text-foreground">' + esc(numTarjeta) + "</p>" +
+          '<p data-cp="tarjeta" class="mt-5 font-mono text-base tracking-wider text-foreground">' + esc(numTarjeta) + "</p>" +
           '<div class="mt-4 flex items-center justify-between text-xs font-medium text-muted-foreground">' +
-          "<span>" + esc(titular) + "</span><span>" + esc(venc) + "</span>" +
+          '<span data-cp="titular">' + esc(titular) + '</span><span data-cp="venc">' + esc(venc) + "</span>" +
           "</div></div>" +
           campoCheckout({ id: "co-tarjeta", label: "Número de tarjeta", icono: "CreditCard", inputmode: "numeric", placeholder: "4242 4242 4242 4242", value: s.pago.tarjeta, field: "tarjeta", error: errores.tarjeta }) +
           '<div class="grid grid-cols-2 gap-3">' +
@@ -710,7 +754,8 @@ function renderCheckoutModal() {
     checkoutContenidoHtml() +
     "</div></div>";
 
-  // Formateo en vivo de los campos.
+  // Formateo en vivo de los campos: actualiza el estado y sincroniza la UI
+  // en el sitio (sin re-render del modal, para no perder foco ni caret).
   root.querySelectorAll("[data-checkout-field]").forEach((input) => {
     input.addEventListener("input", () => {
       const field = input.getAttribute("data-checkout-field");
@@ -719,20 +764,59 @@ function renderCheckoutModal() {
       if (field === "vencimiento") val = fmtVencimiento(val);
       if (field === "cvv") val = fmtCvv(val);
       if (field === "telefono") val = fmtTelefono(val);
+      if (val !== input.value) {
+        const diff = input.value.length - val.length;
+        const pos = Math.max(0, (input.selectionStart || 0) - diff);
+        input.value = val;
+        try { input.setSelectionRange(pos, pos); } catch (e) {}
+      }
       if (["tarjeta", "vencimiento", "cvv", "nombreTarjeta"].includes(field)) {
         checkoutState.pago[field] = val;
       } else {
         checkoutState.datos[field] = val;
       }
-      const pos = input.selectionStart;
-      renderCheckoutModal();
-      const nuevo = document.querySelector('[data-checkout-field="' + field + '"]');
-      if (nuevo) {
-        nuevo.focus();
-        try { nuevo.setSelectionRange(pos, pos); } catch (e) {}
-      }
+      actualizarCheckoutUI();
     });
   });
+}
+
+// Sincroniza errores, vista previa de tarjeta y botones del checkout sin
+// reconstruir el modal.
+function actualizarCheckoutUI() {
+  const root = document.getElementById("modal-root");
+  if (!root || !checkoutState.abierto) return;
+  const errores = checkoutErrores();
+  root.querySelectorAll("[data-checkout-error]").forEach((box) => {
+    const field = box.getAttribute("data-checkout-error");
+    const msg = errores[field] || "";
+    box.innerHTML = msg
+      ? '<p class="mt-1.5 flex items-center gap-1 text-[11px] text-[var(--destructive)]">' + icon("AlertCircle", "h-3 w-3") + esc(msg) + "</p>"
+      : "";
+    const campo = box.parentElement;
+    const input = campo ? campo.querySelector("[data-checkout-field]") : null;
+    if (input) {
+      ["border-[var(--destructive)]/50", "focus:border-[var(--destructive)]", "focus:ring-[var(--destructive)]/20"].forEach((c) => input.classList.toggle(c, !!msg));
+      ["border-border", "focus:border-foreground/30", "focus:ring-ring/30"].forEach((c) => input.classList.toggle(c, !msg));
+    }
+    const ico = campo ? campo.querySelector('[data-checkout-icon="' + field + '"]') : null;
+    if (ico) {
+      ico.classList.toggle("text-[var(--destructive)]", !!msg);
+      ico.classList.toggle("text-muted-foreground", !msg);
+    }
+  });
+  // Vista previa de la tarjeta.
+  const p = checkoutState.pago;
+  const cpT = root.querySelector('[data-cp="tarjeta"]');
+  if (cpT) cpT.textContent = p.tarjeta || "•••• •••• •••• ••••";
+  const cpTi = root.querySelector('[data-cp="titular"]');
+  if (cpTi) cpTi.textContent = p.nombreTarjeta ? p.nombreTarjeta.toUpperCase() : "NOMBRE DEL TITULAR";
+  const cpV = root.querySelector('[data-cp="venc"]');
+  if (cpV) cpV.textContent = p.vencimiento || "MM/AA";
+  // Botones de acción.
+  const btnPago = root.querySelector('[data-action="checkout-paso-pago"]');
+  if (btnPago && btnPago.tagName === "BUTTON") btnPago.disabled = !datosValidos();
+  const btnPagar = root.querySelector('[data-action="checkout-pagar"]');
+  if (btnPagar) btnPagar.disabled = !pagoValido();
 }
 
 function abrirCheckout(datosIniciales) {
@@ -814,6 +898,7 @@ function checkoutPagar() {
     checkoutState.totalExito = total;
     checkoutState.metodoExito = metodo;
     Tienda.finalizarCompra();
+    actualizarSaldos();
     borrarBorradorCheckout();
     checkoutState.paso = "exito";
     renderCheckoutModal();
@@ -852,6 +937,59 @@ const RECARGA_MONTOS = [10000, 50000, 100000, 250000];
 const RECARGA_MAX = 10000000;
 const recargaState = { monto: 0, procesando: false };
 
+/** Sincroniza chips, importe y botón de la página /recargar sin re-render global. */
+function actualizarRecargaUI() {
+  const monto = recargaState.monto;
+  const input = document.getElementById("recarga-custom");
+  const valor = monto ? String(monto) : "";
+  // No sobrescribir el campo mientras el usuario escribe en él.
+  if (input && document.activeElement !== input && input.value !== valor) input.value = valor;
+  document.querySelectorAll("[data-recarga-chip]").forEach((el) => {
+    const esActivo = Number(el.getAttribute("data-monto")) === monto;
+    el.classList.toggle("border-foreground/40", esActivo);
+    el.classList.toggle("bg-secondary", esActivo);
+    el.classList.toggle("text-foreground", esActivo);
+    el.classList.toggle("border-border/60", !esActivo);
+    el.classList.toggle("bg-background", !esActivo);
+    el.classList.toggle("text-muted-foreground", !esActivo);
+  });
+  pintarRecargaBtn();
+}
+
+function pintarRecargaBtn() {
+  const btn = document.getElementById("recarga-btn");
+  if (!btn) return;
+  btn.disabled = recargaState.monto <= 0 || recargaState.procesando;
+  btn.innerHTML = recargaState.procesando
+    ? icon("Loader2", "h-4 w-4 animate-spin") + "<span>Procesando recarga…</span>"
+    : icon("Plus", "h-4 w-4") + "<span>Recargar saldo</span>";
+}
+
+function movimientosHtml(movimientos) {
+  return movimientos.length === 0
+    ? '<div class="flex flex-col items-center py-10 text-center">' +
+      icon("Wallet", "h-10 w-10 text-muted-foreground/40", 1.5) +
+      '<p class="mt-4 text-sm text-muted-foreground">Aún no hay movimientos en tu saldo.</p></div>'
+    : '<ul class="mt-5 divide-y divide-border/40">' +
+      movimientos.map((m) => {
+        const esRecarga = m.tipo === "RECARGA";
+        return (
+          '<li class="flex items-center gap-3 py-3.5">' +
+          '<span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ' +
+          (esRecarga ? "bg-[var(--success)]/15 text-[var(--success)]" : "bg-[var(--signature)]/15 text-[var(--signature)]") + '">' +
+          icon(esRecarga ? "TrendingUp" : "ShoppingBag", "h-4 w-4", 2) + "</span>" +
+          '<div class="min-w-0 flex-1">' +
+          '<p class="truncate text-sm font-medium text-foreground">' + (esRecarga ? "Recarga de saldo" : esc(m.detalle || "Compra con saldo")) + "</p>" +
+          '<p class="mt-0.5 text-xs text-muted-foreground">' + formatearFechaCorta(m.createdAt) + "</p>" +
+          "</div>" +
+          '<span class="text-sm font-semibold tabular-nums ' + (esRecarga ? "text-[var(--success)]" : "text-foreground") + '">' +
+          (esRecarga ? "+" : "") + formatearPrecio(m.monto) + "</span>" +
+          "</li>"
+        );
+      }).join("") +
+      "</ul>";
+}
+
 function confirmarRecarga() {
   const u = Auth.user();
   if (!u || recargaState.procesando) return;
@@ -866,20 +1004,23 @@ function confirmarRecarga() {
   }
   const email = u.email;
   recargaState.procesando = true;
-  rerender(true);
+  pintarRecargaBtn();
   setTimeout(() => {
     recargaState.procesando = false;
     const actual = Auth.user();
     if (!actual || actual.email !== email) return; // la sesión cambió durante la recarga
     const res = DB.recargarSaldo(email, monto);
+    recargaState.monto = 0;
     if (!res.ok) {
       toast("No se pudo completar la recarga", res.error);
-      rerender(true);
+      actualizarRecargaUI();
       return;
     }
-    recargaState.monto = 0;
     toast("Recarga completada", "Se han añadido " + formatearPrecio(monto) + " a tu saldo LUXICAR.");
-    rerender(true);
+    actualizarRecargaUI();
+    actualizarSaldos();
+    const mov = document.getElementById("movimientos");
+    if (mov) mov.innerHTML = movimientosHtml(DB.movimientosSaldoDe(email).slice(0, 8));
   }, 900);
 }
 
@@ -905,29 +1046,6 @@ function pageRecargar() {
     );
   }).join("");
 
-  const movimientosHtml = movimientos.length === 0
-    ? '<div class="flex flex-col items-center py-10 text-center">' +
-      icon("Wallet", "h-10 w-10 text-muted-foreground/40", 1.5) +
-      '<p class="mt-4 text-sm text-muted-foreground">Aún no hay movimientos en tu saldo.</p></div>'
-    : '<ul class="mt-5 divide-y divide-border/40">' +
-      movimientos.map((m) => {
-        const esRecarga = m.tipo === "RECARGA";
-        return (
-          '<li class="flex items-center gap-3 py-3.5">' +
-          '<span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ' +
-          (esRecarga ? "bg-[var(--success)]/15 text-[var(--success)]" : "bg-[var(--signature)]/15 text-[var(--signature)]") + '">' +
-          icon(esRecarga ? "TrendingUp" : "ShoppingBag", "h-4 w-4", 2) + "</span>" +
-          '<div class="min-w-0 flex-1">' +
-          '<p class="truncate text-sm font-medium text-foreground">' + (esRecarga ? "Recarga de saldo" : esc(m.detalle || "Compra con saldo")) + "</p>" +
-          '<p class="mt-0.5 text-xs text-muted-foreground">' + formatearFechaCorta(m.createdAt) + "</p>" +
-          "</div>" +
-          '<span class="text-sm font-semibold tabular-nums ' + (esRecarga ? "text-[var(--success)]" : "text-foreground") + '">' +
-          (esRecarga ? "+" : "") + formatearPrecio(m.monto) + "</span>" +
-          "</li>"
-        );
-      }).join("") +
-      "</ul>";
-
   const html =
     '<div class="mx-auto max-w-4xl px-4 pb-20 pt-14 sm:px-6 sm:pt-20 lg:px-8">' +
     '<div class="anim-in border-b border-border/40 pb-10" style="--dur:0.5s">' +
@@ -939,7 +1057,7 @@ function pageRecargar() {
     '<div class="flex flex-wrap items-start justify-between gap-4">' +
     "<div>" +
     '<p class="text-eyebrow text-[11px] text-[var(--signature)]">Saldo LUXICAR</p>' +
-    '<p class="mt-3 text-4xl font-semibold tracking-tight text-foreground tabular-nums sm:text-5xl">' + formatearPrecio(saldo) + "</p>" +
+    '<p data-saldo class="mt-3 text-4xl font-semibold tracking-tight text-foreground tabular-nums sm:text-5xl">' + formatearPrecio(saldo) + "</p>" +
     '<p class="mt-2 text-sm text-muted-foreground">Moneda interna de la tienda · sin caducidad</p>' +
     "</div>" +
     '<span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[var(--signature)]/15 text-[var(--signature)]">' +
@@ -964,7 +1082,7 @@ function pageRecargar() {
     "</section>" +
     '<section class="anim-in mt-6 rounded-2xl border border-border/50 bg-card p-6 shadow-card sm:p-7" style="--delay:0.15s">' +
     '<h2 class="text-lg font-semibold tracking-tight text-foreground">Movimientos recientes</h2>' +
-    movimientosHtml +
+    '<div id="movimientos">' + movimientosHtml(movimientos) + "</div>" +
     "</section>" +
     "</div>";
 
@@ -973,22 +1091,12 @@ function pageRecargar() {
     html: siteShell("/recargar", html),
     mount() {
       const input = document.getElementById("recarga-custom");
-      const btn = document.getElementById("recarga-btn");
-      if (!input || !btn) return;
+      if (!input) return;
       input.addEventListener("input", () => {
         const limpio = input.value.replace(/\D/g, "").slice(0, 8);
         if (input.value !== limpio) input.value = limpio;
         recargaState.monto = limpio ? parseInt(limpio, 10) : 0;
-        btn.disabled = recargaState.monto <= 0 || recargaState.procesando;
-        document.querySelectorAll("[data-recarga-chip]").forEach((el) => {
-          const esActivo = Number(el.getAttribute("data-monto")) === recargaState.monto;
-          el.classList.toggle("border-foreground/40", esActivo);
-          el.classList.toggle("bg-secondary", esActivo);
-          el.classList.toggle("text-foreground", esActivo);
-          el.classList.toggle("border-border/60", !esActivo);
-          el.classList.toggle("bg-background", !esActivo);
-          el.classList.toggle("text-muted-foreground", !esActivo);
-        });
+        actualizarRecargaUI();
       });
     },
   };

@@ -86,8 +86,8 @@ function headerHtml(path) {
       '<span class="relative z-10 flex items-center gap-2">' +
       icon(item.icon, "h-4 w-4", 2) +
       '<span class="hidden xl:inline">' + item.label + "</span>" +
-      (cnt > 0
-        ? '<span class="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">' + cnt + "</span>"
+      (item.badge
+        ? '<span data-badge="' + item.badge + '" class="' + (cnt > 0 ? "flex" : "hidden") + ' h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">' + cnt + "</span>"
         : "") +
       "</span></a>";
   });
@@ -111,7 +111,7 @@ function headerHtml(path) {
       menuItem("/pedidos", "Receipt", "Mis pedidos") +
       '<a href="/recargar" data-nav class="relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-foreground outline-none select-none hover:bg-accent">' +
       icon("Wallet", "h-4 w-4") + "<span>Saldo</span>" +
-      '<span class="ml-auto text-xs font-semibold text-[var(--signature)]">' + formatearPrecio(DB.saldoDe(user.email)) + "</span></a>" +
+      '<span data-saldo class="ml-auto text-xs font-semibold text-[var(--signature)]">' + formatearPrecio(DB.saldoDe(user.email)) + "</span></a>" +
       (user.role === "ADMIN" ? menuItem("/admin", "Shield", "Panel admin") : "") +
       '<div class="-mx-1 my-1 h-px bg-border"></div>' +
       '<button data-action="logout" class="relative flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-[var(--destructive)] outline-none select-none hover:bg-accent">' +
@@ -130,16 +130,14 @@ function headerHtml(path) {
 
   const cartCount = Tienda.estado.carrito.length;
   const carrito =
-    '<a href="/carrito" data-nav class="group relative flex shrink-0 items-center gap-2 rounded-full border px-2.5 py-2 text-sm font-medium transition-all duration-200 sm:px-3.5 ' +
+    '<a href="/carrito" data-nav data-cart-aria class="group relative flex shrink-0 items-center gap-2 rounded-full border px-2.5 py-2 text-sm font-medium transition-all duration-200 sm:px-3.5 ' +
     (estaActivo(path, "/carrito")
       ? "border-border bg-secondary text-foreground"
       : "border-border/70 text-muted-foreground hover:border-border hover:text-foreground") +
     '" aria-label="Carrito con ' + cartCount + ' vehículo(s)">' +
     '<span class="relative">' +
     icon("ShoppingCart", "h-4 w-4 sm:h-[18px] sm:w-[18px]", 2) +
-    (cartCount > 0
-      ? '<span class="badge-pop absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">' + cartCount + "</span>"
-      : "") +
+    '<span data-badge="carrito" class="badge-pop absolute -right-2 -top-2 ' + (cartCount > 0 ? "flex" : "hidden") + ' h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">' + cartCount + "</span>" +
     "</span>" +
     '<span class="hidden xl:inline">Carrito</span></a>';
 
@@ -186,7 +184,7 @@ function themeToggleHtml() {
         '<span class="block text-sm font-medium text-foreground">' + t.nombre + "</span>" +
         '<span class="block truncate text-[11px] text-muted-foreground">' + t.descripcion + "</span>" +
         "</span>" +
-        (activo ? icon("Check", "h-4 w-4 shrink-0 text-[var(--signature)]", 2.5) : "") +
+        (activo ? '<span data-tema-check class="contents">' + icon("Check", "h-4 w-4 shrink-0 text-[var(--signature)]", 2.5) + "</span>" : "") +
         "</button>"
       );
     }).join("") +
@@ -197,7 +195,7 @@ function themeToggleHtml() {
 // --- Selector de tema (móvil, dentro del sheet) ------------------------------
 function themeToggleMobileHtml() {
   return (
-    '<div class="grid grid-cols-3 gap-2">' +
+    '<div class="grid grid-cols-3 gap-2" data-tema-grid>' +
     TEMAS.map((t) => {
       const activo = Tema.actual() === t.id;
       return (
@@ -250,7 +248,7 @@ function sheetHtml(path) {
       '<a href="/recargar" data-nav data-sheet-close class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors ' +
       (estaActivo(path, "/recargar") ? "bg-secondary text-foreground" : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground") + '">' +
       icon("Wallet", "h-5 w-5", 2) + '<span class="flex-1">Saldo</span>' +
-      '<span class="text-xs font-semibold text-[var(--signature)]">' + formatearPrecio(DB.saldoDe(user.email)) + "</span></a>";
+      '<span data-saldo class="text-xs font-semibold text-[var(--signature)]">' + formatearPrecio(DB.saldoDe(user.email)) + "</span></a>";
     cuentaRows +=
       '<button data-action="logout" data-sheet-close class="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-[var(--destructive)] transition-colors hover:bg-[var(--destructive)]/10">' +
       icon("LogOut", "h-5 w-5") + "<span>Cerrar sesión</span></button>";
@@ -427,6 +425,155 @@ function favCompareButtons(v, nombreCompleto) {
   );
 }
 
+// --- Botón "Agregar al carrito" (tarjeta y CTA de ficha) ----------------------
+// Única fuente de verdad para los 4 estados del botón: la misma tabla se usa
+// al generar el HTML inicial y al repintar el botón en sitio tras un cambio
+// del carrito/garaje, evitando re-renderizar la página completa.
+const CART_BTN_BASE_CARD = "flex flex-1 items-center justify-center gap-2 rounded-xl border px-3 py-3 text-sm font-semibold transition-all duration-300 active:scale-[0.98] ";
+const CART_BTN_BASE_CTA = "flex items-center justify-center gap-2 rounded-xl px-6 py-4 text-sm font-semibold transition-all duration-300 ";
+
+function estadoBotonCarrito(v) {
+  if (!DB.estaDisponible(v)) return "agotado";
+  if (Tienda.estaComprado(v.id)) return "comprado";
+  if (Tienda.estaEnCarrito(v.id)) return "en-carrito";
+  return "agregar";
+}
+
+function cartBtnEstado(estado, esCta) {
+  switch (estado) {
+    case "agotado":
+      return {
+        cls: "cursor-not-allowed " + (esCta ? "border " : "") + "border-border/50 bg-secondary/40 text-muted-foreground",
+        html: icon("Ban", "h-4 w-4", 2.2) + "<span>" + (esCta ? "Vehículo agotado" : "Agotado") + "</span>",
+        disabled: true,
+      };
+    case "comprado":
+      return {
+        cls: "cursor-default " + (esCta ? "border " : "") + "border-border/50 bg-secondary/50 text-muted-foreground",
+        html: icon("BadgeCheck", "h-4 w-4" + (esCta ? " text-[var(--success)]" : ""), 2.3) + "<span>" + (esCta ? "Vehículo comprado" : "Comprado") + "</span>",
+        disabled: true,
+      };
+    case "en-carrito":
+      return {
+        cls: "cursor-default " + (esCta ? "border " : "") + "border-[var(--success)]/40 bg-[var(--success)]/10 text-[var(--success)]",
+        html: icon("Check", "h-4 w-4", 2.5) + "<span>En el carrito</span>",
+        disabled: true,
+      };
+    default:
+      return {
+        cls: esCta
+          ? "bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.99]"
+          : "border-border bg-secondary text-foreground hover:bg-accent",
+        html: icon("ShoppingCart", "h-4 w-4", 2.2) + "<span>Agregar al carrito</span>",
+        disabled: false,
+      };
+  }
+}
+
+function carritoBtnHtml(v, nombre, esCta) {
+  const est = cartBtnEstado(estadoBotonCarrito(v), !!esCta);
+  return (
+    '<button ' + (est.disabled ? "disabled " : "") + 'data-action="add-carrito" data-slug="' + v.id + '" data-nombre="' + esc(nombre) + '"' +
+    (esCta ? ' data-cta="1"' : "") +
+    ' class="' + (esCta ? CART_BTN_BASE_CTA : CART_BTN_BASE_CARD) + est.cls + '">' +
+    est.html +
+    "</button>"
+  );
+}
+
+/** Repinta un botón add-carrito existente según el estado actual de la tienda. */
+function pintarBotonCarrito(btn) {
+  const v = DB.vehiculo(btn.getAttribute("data-slug"));
+  if (!v) return;
+  const esCta = btn.hasAttribute("data-cta");
+  const est = cartBtnEstado(estadoBotonCarrito(v), esCta);
+  btn.className = (esCta ? CART_BTN_BASE_CTA : CART_BTN_BASE_CARD) + est.cls;
+  btn.innerHTML = est.html;
+  btn.disabled = est.disabled;
+}
+
+/** Repinta todos los botones add-carrito visibles (tras compras, altas/bajas). */
+function refrescarBotonesCarrito() {
+  document.querySelectorAll('[data-action="add-carrito"]').forEach(pintarBotonCarrito);
+}
+
+/** Actualiza los enlaces auxiliares de la ficha de vehículo (ver carrito/garaje). */
+function actualizarCtaVehiculo() {
+  const cont = document.getElementById("cta-acciones");
+  if (!cont) return;
+  const slug = cont.getAttribute("data-slug");
+  const enlaces = [
+    ["cta-ver-carrito", "/carrito", "Ver carrito y finalizar compra", Tienda.estaEnCarrito(slug)],
+    ["cta-ver-garaje", "/garaje", "Ver en mi garaje", Tienda.estaComprado(slug)],
+  ];
+  enlaces.forEach((cfg) => {
+    let el = document.getElementById(cfg[0]);
+    if (cfg[3] && !el) {
+      cont.insertAdjacentHTML(
+        "beforeend",
+        '<a href="' + cfg[1] + '" data-nav id="' + cfg[0] + '" class="rounded-xl border border-border bg-card px-6 py-4 text-center text-sm font-semibold text-foreground transition-colors hover:bg-accent">' + cfg[2] + "</a>"
+      );
+    } else if (!cfg[3] && el) {
+      el.remove();
+    }
+  });
+}
+
+/** Repinta los botones de favorito/comparar de un vehículo con animación pop. */
+function refrescarBotonFavCompare(slug) {
+  const sel = CSS.escape(slug);
+  const esFav = Tienda.esFavorito(slug);
+  const esComp = Tienda.estaEnComparador(slug);
+  document.querySelectorAll('[data-action="toggle-favorito"][data-slug="' + sel + '"]').forEach((btn) => {
+    const nombre = btn.getAttribute("data-nombre") || "";
+    btn.innerHTML = icon("Heart", "icon-pop h-3.5 w-3.5 sm:h-4 sm:w-4" + (esFav ? " fill-[var(--signature)] text-[var(--signature)]" : ""), 2);
+    btn.setAttribute("aria-label", (esFav ? "Quitar " : "Añadir ") + nombre + (esFav ? " de favoritos" : " a favoritos"));
+  });
+  document.querySelectorAll('[data-action="toggle-comparar"][data-slug="' + sel + '"]').forEach((btn) => {
+    const nombre = btn.getAttribute("data-nombre") || "";
+    btn.innerHTML = esComp
+      ? icon("Check", "icon-pop h-3.5 w-3.5 text-[var(--success)] sm:h-4 sm:w-4", 2.5)
+      : icon("GitCompareArrows", "icon-pop h-3.5 w-3.5 sm:h-4 sm:w-4", 2);
+    btn.setAttribute("aria-label", (esComp ? "Quitar " : "Añadir ") + nombre + (esComp ? " del comparador" : " al comparador"));
+  });
+}
+
+/** Sincroniza las insignias numéricas del header (favoritos/comparar/garaje/carrito). */
+function actualizarInsignias() {
+  const e = Tienda.estado;
+  document.querySelectorAll("[data-badge]").forEach((el) => {
+    const key = el.getAttribute("data-badge");
+    const n = e[key] ? e[key].length : 0;
+    el.textContent = n;
+    el.classList.toggle("hidden", n === 0);
+    el.classList.toggle("flex", n > 0);
+  });
+  const cartLink = document.querySelector("[data-cart-aria]");
+  if (cartLink) cartLink.setAttribute("aria-label", "Carrito con " + e.carrito.length + " vehículo(s)");
+}
+
+/** Refresca todos los indicadores de saldo visibles de la cuenta activa. */
+function actualizarSaldos() {
+  const u = Auth.user();
+  if (!u) return;
+  const txt = formatearPrecio(DB.saldoDe(u.email));
+  document.querySelectorAll("[data-saldo]").forEach((el) => { el.textContent = txt; });
+}
+
+/** Regenera el CTA móvil fijo conservando su visibilidad por scroll. */
+function actualizarStickyCta() {
+  const viejo = document.getElementById("sticky-cta");
+  if (!viejo) return;
+  const oculto = viejo.classList.contains("hidden");
+  const html = stickyMobileCtaHtml(currentPath || "/");
+  if (!html) { viejo.remove(); return; }
+  const tpl = document.createElement("template");
+  tpl.innerHTML = html.trim();
+  const nuevo = tpl.content.firstChild;
+  if (!oculto) nuevo.classList.remove("hidden");
+  viejo.replaceWith(nuevo);
+}
+
 function vehicleCard(v, opts) {
   opts = opts || {};
   const variante = opts.variante || "marketplace";
@@ -448,28 +595,9 @@ function vehicleCard(v, opts) {
       icon("ChevronRight", "h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-0.5") +
       "</a>";
   } else {
-    let btnCls, btnHtml, disabled = false;
-    if (!disponible) {
-      btnCls = "cursor-not-allowed border-border/50 bg-secondary/40 text-muted-foreground";
-      btnHtml = icon("Ban", "h-4 w-4", 2.2) + "<span>Agotado</span>";
-      disabled = true;
-    } else if (comprado) {
-      btnCls = "cursor-default border-border/50 bg-secondary/50 text-muted-foreground";
-      btnHtml = icon("BadgeCheck", "h-4 w-4", 2.3) + "<span>Comprado</span>";
-      disabled = true;
-    } else if (enCarrito) {
-      btnCls = "cursor-default border-[var(--success)]/40 bg-[var(--success)]/10 text-[var(--success)]";
-      btnHtml = icon("Check", "h-4 w-4", 2.5) + "<span>En el carrito</span>";
-      disabled = true;
-    } else {
-      btnCls = "border-border bg-secondary text-foreground hover:bg-accent";
-      btnHtml = icon("ShoppingCart", "h-4 w-4", 2.2) + "<span>Agregar al carrito</span>";
-    }
     acciones =
       '<div class="mt-auto flex flex-col gap-2.5 sm:flex-row">' +
-      '<button ' + (disabled ? "disabled " : "") + 'data-action="add-carrito" data-slug="' + v.id + '" data-nombre="' + esc(nombre) + '" class="flex flex-1 items-center justify-center gap-2 rounded-xl border px-3 py-3 text-sm font-semibold transition-all duration-300 active:scale-[0.98] ' + btnCls + '">' +
-      btnHtml +
-      "</button>" +
+      carritoBtnHtml(v, nombre) +
       '<a href="' + href + '" data-nav class="group/btn flex flex-1 items-center justify-between gap-2 rounded-xl bg-primary px-3 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90">' +
       "<span>" + etiquetaBoton + "</span>" +
       icon("ChevronRight", "h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-0.5") +

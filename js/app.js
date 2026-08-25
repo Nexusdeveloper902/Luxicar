@@ -102,6 +102,17 @@ function rerender(keepScroll) {
   if (keepScroll) window.scrollTo(0, y);
 }
 
+// Los sliders disparan "input" en ráfaga durante el arrastre: la parrilla se
+// actualiza como máximo una vez por frame.
+let _mpRaf = null;
+function programarActualizacionMarketplace() {
+  if (_mpRaf) return;
+  _mpRaf = requestAnimationFrame(() => {
+    _mpRaf = null;
+    actualizarMarketplace();
+  });
+}
+
 /** Navegación SPA. */
 function navigate(href, opts) {
   opts = opts || {};
@@ -163,7 +174,7 @@ function toggleFavorito(slug, nombre) {
     dentro ? "Añadido a favoritos" : "Eliminado de favoritos",
     nombre + (dentro ? " se ha añadido a tus favoritos." : " se ha quitado de tus favoritos.")
   );
-  rerender(true);
+  refrescarBotonFavCompare(slug);
 }
 
 function toggleComparar(slug, nombre) {
@@ -176,7 +187,7 @@ function toggleComparar(slug, nombre) {
     res.dentro ? "Añadido al comparador" : "Quitado del comparador",
     nombre + (res.dentro ? " se ha añadido al comparador." : " se ha quitado del comparador.")
   );
-  rerender(true);
+  refrescarBotonFavCompare(slug);
 }
 
 function addCarrito(slug, nombre) {
@@ -186,7 +197,43 @@ function addCarrito(slug, nombre) {
   if (!ok) return;
   DB.trackEvent("CART_ADDED");
   toast("Añadido al carrito", nombre + " se ha añadido a tu carrito.");
-  rerender(true);
+}
+
+/** Sincroniza la UI ligada a la tienda tras cualquier cambio de estado. */
+function sincronizarTiendaUI() {
+  actualizarInsignias();
+  refrescarBotonesCarrito();
+  actualizarStickyCta();
+  actualizarCtaVehiculo();
+  // Las páginas cuyo contenido depende de la tienda se refrescan por secciones.
+  if (currentPath === "/carrito") renderCarritoContenido();
+  else if (currentPath === "/favoritos") renderFavoritosContenido();
+  else if (currentPath === "/comparar") renderCompararContenido();
+}
+
+/** Marca el tema activo en los selectores sin re-renderizar la página. */
+function sincronizarTemaUI(id) {
+  document.querySelectorAll('#tema-menu [data-action="tema-set"]').forEach((b) => {
+    const activo = b.getAttribute("data-tema") === id;
+    b.classList.toggle("bg-secondary", activo);
+    b.classList.toggle("hover:bg-secondary/50", !activo);
+    const check = b.querySelector("[data-tema-check]");
+    if (activo && !check) {
+      b.insertAdjacentHTML(
+        "beforeend",
+        '<span data-tema-check class="contents">' + icon("Check", "h-4 w-4 shrink-0 text-[var(--signature)]", 2.5) + "</span>"
+      );
+    } else if (!activo && check) {
+      check.remove();
+    }
+  });
+  document.querySelectorAll('[data-tema-grid] [data-action="tema-set"]').forEach((b) => {
+    const activo = b.getAttribute("data-tema") === id;
+    b.classList.toggle("border-foreground/40", activo);
+    b.classList.toggle("bg-secondary", activo);
+    b.classList.toggle("border-border/50", !activo);
+    b.classList.toggle("hover:bg-secondary/50", !activo);
+  });
 }
 
 function logoutAdmin() {
@@ -201,15 +248,15 @@ const ACTIONS = {
   "quitar-carrito": (el) => {
     Tienda.quitarDelCarrito(el.getAttribute("data-slug"));
     toast("Vehículo eliminado", (el.getAttribute("data-nombre") || "") + " se ha quitado del carrito.");
-    rerender(true);
   },
   "quitar-comparar": (el) => {
     Tienda.quitarDelComparador(el.getAttribute("data-slug"));
-    rerender(true);
+    refrescarBotonFavCompare(el.getAttribute("data-slug"));
   },
   "vaciar-comparador": () => {
+    const slugs = Tienda.estado.comparar.slice();
     Tienda.vaciarComparador();
-    rerender(true);
+    slugs.forEach(refrescarBotonFavCompare);
   },
   "menu-abrir": () => {
     cerrarSheet();
@@ -225,13 +272,14 @@ const ACTIONS = {
     if (menu) menu.classList.toggle("hidden");
   },
   "tema-set": (el) => {
-    Tema.set(el.getAttribute("data-tema"));
-    setTimeout(() => rerender(true), 200);
+    const id = el.getAttribute("data-tema");
+    Tema.set(id);
+    sincronizarTemaUI(id);
   },
   "logout": () => {
+    // Auth.subscribe dispara el re-render; aquí solo cerramos el sheet.
     Auth.logout();
     cerrarSheet();
-    rerender(true);
   },
   "logout-home": () => {
     Auth.logout();
@@ -268,7 +316,7 @@ const ACTIONS = {
   },
   "recarga-chip": (el) => {
     recargaState.monto = parseInt(el.getAttribute("data-monto"), 10) || 0;
-    rerender(true);
+    actualizarRecargaUI();
   },
   "recarga-confirmar": () => confirmarRecarga(),
   "pedido-detalle": (el) => abrirPedidoModal(el.getAttribute("data-number")),
@@ -280,7 +328,9 @@ const ACTIONS = {
   "galeria": (el) => galeriaCambiar(el.getAttribute("data-index")),
   "limpiar-busqueda": () => {
     marketplaceState.busqueda = "";
-    rerender(true);
+    const input = document.getElementById("busqueda");
+    if (input) input.value = "";
+    actualizarMarketplace();
   },
   "limpiar-filtros": () => {
     marketplaceState.busqueda = "";
@@ -289,16 +339,33 @@ const ACTIONS = {
       precioMin: PRECIO_MIN, precioMax: PRECIO_MAX,
       añoMin: AÑO_MIN, añoMax: AÑO_MAX, potenciaMin: 0,
     };
-    rerender(true);
+    const input = document.getElementById("busqueda");
+    if (input) input.value = "";
+    repintarPanelesFiltros();
+    sincronizarChipsMarketplace();
+    actualizarMarketplace();
   },
-  "toggle-panel-filtros": () => {
+  "toggle-panel-filtros": (el) => {
     marketplaceState.panelAbierto = !marketplaceState.panelAbierto;
-    rerender(true);
+    const abierto = marketplaceState.panelAbierto;
+    el.classList.toggle("border-foreground/30", abierto);
+    el.classList.toggle("bg-secondary", abierto);
+    el.classList.toggle("text-foreground", abierto);
+    el.classList.toggle("border-border", !abierto);
+    el.classList.toggle("bg-card", !abierto);
+    el.classList.toggle("text-muted-foreground", !abierto);
+    const movil = document.getElementById("panel-filtros-movil");
+    if (movil) {
+      movil.style.height = abierto ? "auto" : "0";
+      const inner = movil.querySelector("[data-filtros-panel]");
+      if (inner && abierto && !inner.innerHTML.trim()) inner.innerHTML = filtrosPanelHtml();
+    }
   },
   "filtro-marca": (el) => {
     const valor = el.getAttribute("data-valor") || null;
     marketplaceState.filtros.marca = marketplaceState.filtros.marca === valor ? null : valor;
-    rerender(true);
+    sincronizarChipsMarketplace();
+    actualizarMarketplace();
   },
   "filtro-chip": (el) => {
     const grupo = el.getAttribute("data-grupo");
@@ -307,7 +374,8 @@ const ACTIONS = {
     marketplaceState.filtros[grupo] = arr.includes(valor)
       ? arr.filter((x) => x !== valor)
       : arr.concat(valor);
-    rerender(true);
+    sincronizarChipsMarketplace();
+    actualizarMarketplace();
   },
 };
 
@@ -397,6 +465,37 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Controles del marketplace por delegación: búsqueda y sliders actualizan
+  // solo la parrilla (sin re-render global), conservando foco y arrastre.
+  document.addEventListener("input", (ev) => {
+    const t = ev.target;
+    if (!t || !t.getAttribute) return;
+    if (t.id === "busqueda") {
+      marketplaceState.busqueda = t.value;
+      actualizarMarketplace();
+      return;
+    }
+    const key = t.getAttribute("data-filtro-range");
+    if (key) {
+      const val = parseInt(t.value, 10);
+      const f = marketplaceState.filtros;
+      f[key] = val;
+      // Restricciones cruzadas (min <= max)
+      if (key === "precioMin" && f.precioMin > f.precioMax) f.precioMax = f.precioMin;
+      if (key === "precioMax" && f.precioMax < f.precioMin) f.precioMin = f.precioMax;
+      if (key === "añoMin" && f.añoMin > f.añoMax) f.añoMax = f.añoMin;
+      if (key === "añoMax" && f.añoMax < f.añoMin) f.añoMin = f.añoMax;
+      actualizarSlidersUI();
+      programarActualizacionMarketplace();
+    }
+  });
+  document.addEventListener("change", (ev) => {
+    if (ev.target && ev.target.id === "ordenamiento") {
+      Tienda.setOrdenamiento(ev.target.value);
+      actualizarMarketplace();
+    }
+  });
+
   // Escape: cierra modales y menús.
   document.addEventListener("keydown", (ev) => {
     if (ev.key !== "Escape") return;
@@ -432,6 +531,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Re-render cuando cambia la autenticación (para reflejar el header, etc.).
   Auth.subscribe(() => rerender(true));
+
+  // Sincronización fina de insignias/botones/secciones al cambiar la tienda.
+  Tienda.subscribe(sincronizarTiendaUI);
 
   render();
 });

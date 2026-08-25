@@ -501,9 +501,12 @@ const Auth = (function () {
     },
     logout() {
       try { localStorage.removeItem(KEY_SESION); } catch (e) {}
-      // El garaje en memoria pertenece a la cuenta que sale: no debe quedar
-      // visible (badges "Comprado", contador del header) para el siguiente usuario.
+      // Garaje, favoritos y comparador en memoria pertenecen a la sesión que
+      // cierra: no deben quedar visibles (badges, contadores del header) para
+      // el siguiente usuario ni fusionarse en su cuenta al iniciar sesión.
       Tienda.setGaraje([]);
+      Tienda.setFavoritos([]);
+      Tienda.vaciarComparador();
       emitir();
     },
     /** Reconstruye el garaje de la tienda desde los pedidos completados de la cuenta. */

@@ -35,3 +35,14 @@ Marketplace de vehículos de lujo en vanilla JS (sin framework). SPA con router 
 - Fallback: sin clase `fx-cinematica` el CSS muestra la versión estática; la cinemática solo se activa en `createScope({mediaQueries:{cinematica:'(min-width:1024px)', reduced:'(prefers-reduced-motion: reduce)'}})` cuando no hay reduced-motion.
 - Cuidado: NO llamar `obs.refresh()` sincrónicamente tras `link()` — onScroll resuelve su target en microtask; un refresh manual rompe `updateBounds`.
 - Ya no hay vehículo persistente: la silueta SVG blueprint se retiró por decisión de diseño. En CIRCUITO una chispa (`.fx-punta`) corona la punta del trazo que se dibuja (`placePunta(fDib)`); en FICHA el hueco del coche es ahora una foto real del modelo (`.fx-spec-foto`, reveal por `clip-path` en el timeline + deriva Ken Burns paramétrica en `chores`).
+
+
+## Visor 3D de vehículos (three.js local)
+
+- Motor: three.js vendereado localmente en `assets/3d/js/vendor/three/`. Bundle IIFE `luxicar3d.min.js` expone `window.Luxicar3D.mountViewer(container, glbUrl, {autoRotate})` (incluye GLTFLoader + DRACOLoader + MeshoptDecoder). Se carga en `index.html` con `<script>` clásico (sin import maps).
+- Catálogo de modelos: `js/model3d.js` — `MODEL3D_STAGES` (stage → ruta GLB local), `MODEL3D_MAP` (id de vehículo → stage; reusa el mismo stage para varios anuncios del mismo modelo base), `MODEL3D_FALLBACK` (descripción de fallbacks/equivalencias), y `modelo3dDeVehiculo(id)` → ruta GLB o "".
+- Modelos: `assets/3d/cars/*.glb` (46 stages, ~363 MB total). TODO es local; cero descargas en runtime.
+- Página de detalle: `pageVehiculo()` en `js/pages.js` inserta `.lx3d-container` con `data-viewer` y lo monta en `mount()` vía `window.Luxicar3D.mountViewer`; `mount()` devuelve cleanup que llama `dispose()` (el router de app.js lo invoca al salir de ruta).
+- El visor solo se monta al abrir un detalle (lazy): el marketplace/landing NO cargan GLBs. Landing usa solo fotos — no tocar.
+- Interacción: arrastre (giro), rueda/pinch (zoom), idle rotation opcional, encuadre automático por bounding box. Overlay de carga y estado de error vía CSS `.lx3d-*` en `css/app.css`.
+- Regenerar bundle: `esbuild` desde `/tmp/viewerbuild/viewer.js`; `import.meta.url` se define a literal (DRACO resuelve rutas no usadas en init).

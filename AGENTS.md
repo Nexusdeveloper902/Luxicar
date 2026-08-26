@@ -29,9 +29,9 @@ Marketplace de vehículos de lujo en vanilla JS (sin framework). SPA con router 
 
 ## Landing cinematográfica (portada / home)
 
-- Escenas FX: `#fx` (620vh de pista) → `.fx-sticky` (viewport pegado) con 4 escenas apiladas (INTRO/CIRCUITO/FICHA/MERCADO) y `#fx-vehicle` persistente. HUD lateral con capítulos, barra de progreso y %.
+- Escenas FX: `#fx` (620vh de pista) → `.fx-sticky` (viewport pegado) con 4 escenas apiladas (INTRO/CIRCUITO/FICHA/MERCADO). HUD lateral con capítulos, barra de progreso y %.
 - Montaje: `pageHome().mount()` → `mountLanding()` → devuelve función de limpieza (`scope.revert()`); `app.js` la invoca al salir de ruta.
-- Coreografía: `createTimeline({autoplay:false})` (duración ~15400ms) vinculado con `onScroll({sync:1, enter:'start start', leave:'end end'}).link(tl)`. `chores(self)` actualiza lo paramétrico (coche por `getPointAtLength`, gauges, contadores, nodos, HUD) en cada `onUpdate`.
+- Coreografía: `createTimeline({autoplay:false})` (duración ~15400ms) vinculado con `onScroll({sync:1, enter:'start start', leave:'end end'}).link(tl)`. `chores(self)` actualiza lo paramétrico (chispa por `getPointAtLength`, gauges, contadores, nodos, HUD) en cada `onUpdate`.
 - Fallback: sin clase `fx-cinematica` el CSS muestra la versión estática; la cinemática solo se activa en `createScope({mediaQueries:{cinematica:'(min-width:1024px)', reduced:'(prefers-reduced-motion: reduce)'}})` cuando no hay reduced-motion.
 - Cuidado: NO llamar `obs.refresh()` sincrónicamente tras `link()` — onScroll resuelve su target en microtask; un refresh manual rompe `updateBounds`.
-- El vehículo es una silueta SVG blueprint (`#fx-vehicle`); la pose se calcula en `placeCar(t)`. (Hubo una capa WebGL/Three.js con un GLB ajeno — retirada por decisión de diseño; si se reintroduce, que consuma la misma pose sin tocar el timeline.)
+- Ya no hay vehículo persistente: la silueta SVG blueprint se retiró por decisión de diseño. En CIRCUITO una chispa (`.fx-punta`) corona la punta del trazo que se dibuja (`placePunta(fDib)`); en FICHA el hueco del coche es ahora una foto real del modelo (`.fx-spec-foto`, reveal por `clip-path` en el timeline + deriva Ken Burns paramétrica en `chores`).

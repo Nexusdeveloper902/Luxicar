@@ -7,18 +7,15 @@
 //
 //   01 INTRO       Héroe: foto a sangre completa, tipografía que se despliega,
 //                  HUD de telemetría, anillos orbitando.
-//   02 CIRCUITO    El "vehículo" (silueta SVG blueprint) recorre un circuito
-//                  SVG que se dibuja con el scroll; nodos de marcas se activan.
-//   03 FICHA       El vehículo se aparca en una composición de especificaciones:
-//                  dos gauges circulares y lecturas métricas que cuentan.
+//   02 CIRCUITO    Un circuito SVG se dibuja con el scroll (una chispa recorre
+//                  la punta del trazo); nodos de marcas se activan al paso.
+//   03 FICHA       Composición de especificaciones: fotografía del modelo en
+//                  marco con reveal, dos gauges circulares y lecturas métricas.
 //   04 MERCADO     La escena se resuelve hacia la interfaz normal: CTA que
 //                  conduce al grid del marketplace.
 //
 // El scroll es la única entrada: progress del observador -> tiempo del timeline.
 // Los rotadores/flotantes ambientales (anime loop) se pausan fuera de su escena.
-//
-// Integración 3D futura: la coreografía expone la pose del vehículo en
-// `chores`; una capa WebGL propia podría consumirla sin tocar el timeline.
 //
 // Sin framework, sin rerender: el montaje devuelve una función de limpieza
 // (revert del scope + listeners) que `app.js` invoca al cambiar de ruta.
@@ -41,7 +38,6 @@ const FX = {
   finRuta: 9600,
   entradaSpecs: 9700,
   finEntradaSpecs: 10600,
-  parkingFin: 11200,
   gaugesIni: 10800,
   gaugesFin: 13200,
   filasIni: 11400,
@@ -57,58 +53,6 @@ const FX = {
     ["04 / MERCADO", 14400, 15400],
   ],
 };
-
-// ---------------------------------------------------------------------------
-// Silueta blueprint del vehículo (SVG inline, trazable por stroke-dasharray).
-// Superdeportivo de perfil, morro a +x, dibujado sobre 560x160.
-// ---------------------------------------------------------------------------
-function landingCarSvg() {
-  return (
-    '<svg class="fx-car-svg" viewBox="0 0 560 160" aria-hidden="true">' +
-    '<g class="fx-car-stroke" fill="none" stroke="currentColor">' +
-    // --- carrocería (contorno con pasos de rueda) ---
-    '<path vector-effect="non-scaling-stroke" stroke-width="1.6" stroke-linejoin="round" ' +
-    'd="M 20 110 ' +
-    "C 15 100 16 89 25 81 " +
-    "C 31 65 45 57 64 53 " +
-    "L 78 50 " +
-    "C 96 46 111 45 128 44 " +
-    "C 152 25 194 14 236 14 " +
-    "C 274 14 306 24 330 42 " +
-    "L 356 52 " +
-    "C 396 64 462 80 508 94 " +
-    "L 530 102 " +
-    "C 536 104 536 109 530 111 " +
-    "L 500 114 " +
-    // arco rueda delantera (rueda centrada en 446)
-    "C 488 88 468 76 445 76 " +
-    "C 421 76 402 92 394 114 " +
-    "L 168 114 " +
-    // arco rueda trasera (rueda centrada en 116)
-    "C 160 92 140 76 116 76 " +
-    "C 92 76 72 92 64 114 " +
-    "Z\"/>" +
-    // --- detalles de carrocería ---
-    '<path stroke-width="1.2" opacity="0.28" d="M 132 46 C 156 30 196 21 232 20"/>' + // capó del parabrisas
-    '<path stroke-width="1.2" opacity="0.28" d="M 258 17 L 296 24 L 318 40 L 252 39 Z"/>' + // ventana
-    '<path stroke-width="1.2" opacity="0.35" d="M 333 45 L 302 84 L 200 88 L 188 46"/>' + // línea de puerta
-    '<path stroke-width="1.2" opacity="0.30" d="M 500 96 L 462 104"/>' + // faro
-    '<path stroke-width="1.2" opacity="0.25" d="M 30 84 L 62 80"/>' + // spoiler trasero
-    // --- ruedas ---
-    '<g stroke-width="1.4" >' +
-    '<circle cx="116" cy="106" r="26"/>' +
-    '<circle cx="116" cy="106" r="11"/>' +
-    '<circle cx="446" cy="106" r="26"/>' +
-    '<circle cx="446" cy="106" r="11"/>' +
-    '<path stroke-width="1.2" opacity="0.5" d="M 116 80 L 116 132 M 90 106 L 142 106 M 446 80 L 446 132 M 420 106 L 472 106"/>' +
-    "</g>" +
-    // --- línea de suelo y cotas técnica ---
-    '<path stroke-width="1" stroke-dasharray="3 7" opacity="0.5" d="M 8 138 L 552 138"/>' +
-    '<path stroke-width="1" opacity="0.35" d="M 20 138 L 20 112 M 540 138 L 540 112"/>' +
-    "</g>" +
-    "</svg>"
-  );
-}
 
 // ---------------------------------------------------------------------------
 // Helpers de formato de especs (idénticos a los del catálogo)
@@ -230,6 +174,8 @@ function landingStageHtml(hero, specsVeh) {
     // nodos (se reposicionan por JS a lo largo del path)
     nodos +
     "</g></svg>" +
+    // chispa que corona la punta del trazo mientras se dibuja
+    '<i class="fx-punta" data-fx-punta aria-hidden="true"></i>' +
     '</div>' +
     // ESC 03 — FICHA: composición de especificaciones
     '<div class="fx-scene fx-specs" data-scene="specs">' +
@@ -238,7 +184,14 @@ function landingStageHtml(hero, specsVeh) {
     '<p class="fx-kicker">Ficha técnica — ' + esc(specsVeh.marca + " " + specsVeh.modelo) + "</p>" +
     '<h2 class="fx-spec-titulo"><span>' + esc(specsVeh.modelo) + "</span></h2>" +
     "</div>" +
-    '<div class="fx-vehicle-spot" aria-hidden="true"></div>' +
+    '<figure class="fx-spec-foto" data-fx-foto>' +
+    smartImg(specsVeh.imagenes[1] || specsVeh.imagenes[0], specsVeh.marca + " " + specsVeh.modelo) +
+    '<figcaption class="fx-spec-foto-pie">' +
+    '<span class="fx-spec-foto-eyebrow">Unidad destacada</span>' +
+    '<span class="fx-spec-foto-nombre">' + esc(specsVeh.marca + " " + specsVeh.modelo) + "</span>" +
+    '<span class="fx-spec-foto-meta">' + esc(specsVeh.año + " · " + specsVeh.motor) + "</span>" +
+    "</figcaption>" +
+    "</figure>" +
     '<div class="fx-spec-der">' +
     '<div class="fx-gauges">' +
     gaugeSvg("potencia", "POTENCIA", "0", specs[0]) +
@@ -254,11 +207,6 @@ function landingStageHtml(hero, specsVeh) {
     '<h2 class="fx-market-titulo">88 vehículos. <span class="fx-market-brillante">Una colección.</span></h2>' +
     '<a href="/marketplace" data-nav class="fx-market-cta">Entrar al marketplace ' + icon("ArrowRight", "h-4 w-4") + "</a>" +
     "</div></div>" +
-    // El vehículo persistente (silueta SVG blueprint).
-    '<div class="fx-vehicle" id="fx-vehicle" aria-hidden="true">' +
-    landingCarSvg() +
-    '<div class="fx-vehicle-glow"></div>' +
-    "</div>" +
     // HUD lateral fijo (capítulos + barra + porcentaje)
     '<div class="fx-hud" aria-hidden="true">' +
     '<ol class="fx-hud-caps"></ol>' +
@@ -320,7 +268,6 @@ function mountLanding() {
 
       root.classList.add("fx-cinematica");
       const a = window.anime;
-      const utils = a.utils;
 
       // Referencias DOM
       const elIntro = root.querySelector('[data-scene="intro"]');
@@ -328,7 +275,9 @@ function mountLanding() {
       const elSpecs = root.querySelector('[data-scene="specs"]');
       const elMarket = root.querySelector('[data-scene="market"]');
       const elSticky = root.querySelector(".fx-sticky");
-      const veh = root.querySelector("#fx-vehicle");
+      const punta = root.querySelector("[data-fx-punta]");
+      const foto = root.querySelector("[data-fx-foto]");
+      const fotoImg = foto ? foto.querySelector("img") : null;
       const path = root.querySelector("#fx-path");
       const hudBars = root.querySelector("[data-fx-barra]");
       const hudPct = root.querySelector("[data-fx-pct]");
@@ -342,10 +291,8 @@ function mountLanding() {
 
       // -- geometric state ------------------------------------------------
       let pathLen = 0;
-      let spotPoint = { x: 0, y: 0 };
       let stageW = 1, stageH = 1;
       let vw = 1, vh = 1;
-      let carW = veh.clientWidth || 340;
 
       const posicionarNodos = () => {
         pathLen = path.getTotalLength();
@@ -374,12 +321,6 @@ function mountLanding() {
         stageH = elSticky.clientHeight || window.innerHeight;
         vw = window.innerWidth;
         vh = window.innerHeight;
-        carW = veh.clientWidth || carW;
-        // Punto de aparcamiento (escena specs): el contenedor del hueco
-        const spotEl = root.querySelector(".fx-vehicle-spot");
-        if (!spotEl) return;
-        const spot = spotEl.getBoundingClientRect();
-        spotPoint = { x: spot.left + spot.width / 2, y: spot.top + spot.height / 2 };
       };
 
       try { posicionarNodos(); } catch (e0) { /* navegadores sin SMIL path API */ }
@@ -416,6 +357,13 @@ function mountLanding() {
       // Specs entra (circuito sale solapado)
       tl.add(elSpecs, { opacity: 1, duration: 900, ease: "inOutQuad" }, FX.entradaSpecs);
       tl.add(elTrack, { opacity: 0, duration: 800, ease: "inOutQuad" }, FX.entradaSpecs + 300);
+      // Foto del modelo: reveal de izquierda a derecha con leve asentamiento
+      tl.add(foto, {
+        opacity: [0, 1],
+        clipPath: ["inset(0 100% 0 0 round 16px)", "inset(0 0% 0 0 round 16px)"],
+        duration: 1500,
+        ease: "inOutQuad",
+      }, FX.entradaSpecs + 250);
       // Filas de specs escalonadas (barras)
       tl.add(".fx-fila", {
         x: [48, 0],
@@ -440,53 +388,19 @@ function mountLanding() {
       const capsEls = Array.from(capsList.querySelectorAll("[data-cap]"));
 
       const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
-      const easeInOutQuad = (x) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2);
       const clamp01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
-      const clamp = (x, lo, hi) => (x < lo ? lo : x > hi ? hi : x);
       const pointAt = (f) => path.getPointAtLength(f * pathLen);
 
-      function placeCar(t) {
-        // posición del coche durante la ruta + mezcla hacia el parking
-        const fRuta = clamp01((t - FX.inicioRuta) / (FX.finRuta - FX.inicioRuta));
-        const fPark = clamp01((t - FX.parkingFin + 600) / (FX.parkingFin - (FX.entradaSpecs + 300) - 200));
-        let x, y, rot, scale;
-
-        if (fRuta < 1) {
-          // durante la ruta
-          const pt = pathLen ? pointAt(fRuta) : { x: 0, y: 0 };
-          const pt2 = pathLen ? pointAt(Math.min(1, fRuta + 0.002)) : { x: 0, y: 0 };
-          const sx = stageW / 1200, sy = stageH / 700;
-          x = pt.x * sx;
-          y = pt.y * sy;
-          rot = (Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * 180) / Math.PI;
-          scale = clamp(vw / 2200, 0.42, 0.72);
-        } else {
-          // aparcado / desaparición
-          const pt = pathLen ? pointAt(1) : { x: 0, y: 0 };
-          const sx = stageW / 1200, sy = stageH / 700;
-          const ex = pt.x * sx, ey = pt.y * sy;
-          const e = easeInOutQuad(fPark);
-          x = utils.lerp(ex, spotPoint.x, e);
-          y = utils.lerp(ey, spotPoint.y, e);
-          rot = 0;
-          scale = utils.lerp(0.72, 1, e);
-        }
-        veh.style.transform =
-          "translate3d(" + (x - carW / 2).toFixed(1) + "px," + (y - carW * 0.25).toFixed(1) + "px,0) rotate(" + rot.toFixed(1) + "deg) scale(" + scale.toFixed(3) + ")";
-        return fRuta;
+      function placePunta(fDib) {
+        // la chispa corona la punta del trazo que se está dibujando
+        const pt = pathLen ? pointAt(fDib) : { x: 0, y: 0 };
+        const sx = stageW / 1200, sy = stageH / 700;
+        punta.style.transform =
+          "translate3d(" + (pt.x * sx).toFixed(1) + "px," + (pt.y * sy).toFixed(1) + "px,0)";
       }
 
       function chores(self) {
         const t = self.progress * FX_DUR;
-        // escenas por core (opacidades suaves en paralelo al timeline)
-        // coche: visible sólo en 02-04; desaparece completo iniciando el mercado
-        const visCoche = clamp01((t - FX.entradaCircuito) / 600);
-        const fadeCoche = Math.min(500, Math.max(120, FX_DUR - FX.ctaIni - 50));
-        const visCocheOut = t > FX.ctaIni ? clamp01(1 - (t - FX.ctaIni) / fadeCoche) : 1;
-        veh.style.opacity = (visCoche * visCocheOut).toFixed(3);
-        if (pathLen && t > FX.entradaCircuito && t < FX.ctaIni) placeCar(t);
-        else if (t <= FX.entradaCircuito && pathLen) placeCar(FX.entradaCircuito + 1);
-        // tras el cta: el coche queda en su última pose (aparcado)
 
         // dibujo de la ruta (stroke-dashoffset directo — GPU-friendly en GPU? no layout)
         if (pathLen) {
@@ -495,8 +409,18 @@ function mountLanding() {
           nodos.forEach((n, i) => {
             n.classList.toggle("on", fDib >= FX.fNodos[i]);
           });
+          // chispa: aparece al empezar el trazo y se apaga al salir el circuito
+          const visPunta = clamp01((t - FX.inicioRuta) / 300) * clamp01(1 - (t - FX.entradaSpecs) / 500);
+          punta.style.opacity = visPunta.toFixed(3);
+          if (visPunta > 0) placePunta(fDib);
         } else {
           nodos.forEach((n) => n.classList.add("on"));
+        }
+
+        // deriva Ken Burns de la foto durante la escena de specs
+        if (fotoImg) {
+          const fFoto = clamp01((t - FX.entradaSpecs) / (FX.ctaIni - FX.entradaSpecs));
+          fotoImg.style.transform = "scale(" + (1.02 + 0.06 * fFoto).toFixed(4) + ")";
         }
 
         // gauges + contadores (escena specs)

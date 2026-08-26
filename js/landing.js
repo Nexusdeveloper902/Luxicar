@@ -305,13 +305,14 @@ function mountLanding() {
           const t = n.querySelector(".fx-nodo-t");
           const m = n.querySelector(".fx-nodo-marco");
           const w = t.getBBox().width;
-          const est = w + 18;
-          m.setAttribute("y", "-13");
-          t.setAttribute("y", "22");
-          t.setAttribute("x", -(w / 2 + 9).toFixed(1));
+          const est = w + 20;
+          // etiqueta: texto centrado dentro de la pastilla, sobre el nodo
+          m.setAttribute("x", (-(est / 2)).toFixed(1));
+          m.setAttribute("y", "-10");
           m.setAttribute("width", est.toFixed(1));
-          m.setAttribute("x", -(est / 2).toFixed(1));
-          m.setAttribute("height", "19");
+          m.setAttribute("height", "20");
+          t.setAttribute("x", (-(w / 2)).toFixed(1));
+          t.setAttribute("y", "4");
         });
       };
 
@@ -338,7 +339,6 @@ function mountLanding() {
         opacity: 0,
         duration: 1900,
         ease: "inOut(3)",
-        delay: a.stagger(46, { from: "center" }),
       }, 0);
       tl.add(chips, {
         x: (c, i) => [-120, 120, -90, 90][i % 4],

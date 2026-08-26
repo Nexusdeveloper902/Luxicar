@@ -17,11 +17,8 @@
 // El scroll es la única entrada: progress del observador -> tiempo del timeline.
 // Los rotadores/flotantes ambientales (anime loop) se pausan fuera de su escena.
 //
-// Integración 3D: `js/landing-3d.js` (módulo ES, Three.js vendored) registra
-// `window.LUXICAR_3D` y monta un canvas WebGL sobre el escenario; recibe la
-// misma pose que la silueta SVG y la oculta al cargar el modelo GLB
-// (assets/models/car-concept — "Car Concept", Eric Chadwick / Darmstadt
-// Graphics Group, CC-BY-4.0). Sin WebGL/módulo: la silueta SVG permanece.
+// Integración 3D futura: la coreografía expone la pose del vehículo en
+// `chores`; una capa WebGL propia podría consumirla sin tocar el timeline.
 //
 // Sin framework, sin rerender: el montaje devuelve una función de limpieza
 // (revert del scope + listeners) que `app.js` invoca al cambiar de ruta.
@@ -249,7 +246,6 @@ function landingStageHtml(hero, specsVeh) {
     "</div>" +
     '<ul class="fx-filas">' + filas + "</ul>" +
     "</div>" +
-    '<p class="fx-credit">Modelo 3D “Car Concept” — Eric Chadwick / Darmstadt Graphics Group · CC-BY-4.0</p>' +
     "</div>" +
     // ESC 04 — MERCADO: transición a la interfaz normal
     '<div class="fx-scene fx-market" data-scene="market">' +
@@ -258,8 +254,7 @@ function landingStageHtml(hero, specsVeh) {
     '<h2 class="fx-market-titulo">88 vehículos. <span class="fx-market-brillante">Una colección.</span></h2>' +
     '<a href="/marketplace" data-nav class="fx-market-cta">Entrar al marketplace ' + icon("ArrowRight", "h-4 w-4") + "</a>" +
     "</div></div>" +
-    // El vehículo persistente (silueta SVG). La capa WebGL (landing-3d.js)
-    // añade su propio <canvas> a .fx-sticky y oculta esta silueta al cargar.
+    // El vehículo persistente (silueta SVG blueprint).
     '<div class="fx-vehicle" id="fx-vehicle" aria-hidden="true">' +
     landingCarSvg() +
     '<div class="fx-vehicle-glow"></div>' +
@@ -450,9 +445,6 @@ function mountLanding() {
       const clamp = (x, lo, hi) => (x < lo ? lo : x > hi ? hi : x);
       const pointAt = (f) => path.getPointAtLength(f * pathLen);
 
-      let prevFRuta = 0;
-      let ultimaPose = null;
-      let fx3d = null;
       function placeCar(t) {
         // posición del coche durante la ruta + mezcla hacia el parking
         const fRuta = clamp01((t - FX.inicioRuta) / (FX.finRuta - FX.inicioRuta));
@@ -481,10 +473,7 @@ function mountLanding() {
         }
         veh.style.transform =
           "translate3d(" + (x - carW / 2).toFixed(1) + "px," + (y - carW * 0.25).toFixed(1) + "px,0) rotate(" + rot.toFixed(1) + "deg) scale(" + scale.toFixed(3) + ")";
-        // velocidad angular de ruedas (signo según dirección del scroll)
-        const ruedasVel = (fRuta - prevFRuta) * 3200;
-        prevFRuta = fRuta;
-        return { x: x, y: y, rotDeg: rot, scale: scale, parkingBlend: fRuta >= 1 ? fPark : 0, ruedasVel: ruedasVel };
+        return fRuta;
       }
 
       function chores(self) {
@@ -495,19 +484,9 @@ function mountLanding() {
         const fadeCoche = Math.min(500, Math.max(120, FX_DUR - FX.ctaIni - 50));
         const visCocheOut = t > FX.ctaIni ? clamp01(1 - (t - FX.ctaIni) / fadeCoche) : 1;
         veh.style.opacity = (visCoche * visCocheOut).toFixed(3);
-        let pose = null;
-        if (pathLen && t > FX.entradaCircuito && t < FX.ctaIni) pose = placeCar(t);
-        else if (t <= FX.entradaCircuito && pathLen) pose = placeCar(FX.entradaCircuito + 1);
+        if (pathLen && t > FX.entradaCircuito && t < FX.ctaIni) placeCar(t);
+        else if (t <= FX.entradaCircuito && pathLen) placeCar(FX.entradaCircuito + 1);
         // tras el cta: el coche queda en su última pose (aparcado)
-        if (pose) ultimaPose = pose;
-        if (fx3d) {
-          fx3d.update({
-            // antes del circuito no hay pose: el visor hace turntable en el intro
-            pose: t < FX.entradaCircuito ? null : ultimaPose,
-            vis: t < FX.entradaCircuito ? 1 : visCoche * visCocheOut,
-            carWPx: carW,
-          });
-        }
 
         // dibujo de la ruta (stroke-dashoffset directo — GPU-friendly en GPU? no layout)
         if (pathLen) {
@@ -605,28 +584,9 @@ function mountLanding() {
       a.animate(chips, { opacity: [0, 1], duration: 900, ease: "outCubic", delay: a.stagger(90, { start: 220 }) });
       a.animate([root.querySelector(".fx-kicker"), root.querySelector(".fx-sub")], { opacity: [0, 1], y: [14, 0], duration: 1000, ease: "outCubic", delay: a.stagger(80, { start: 150 }) }, { });
 
-      // Integración 3D (mejora progresiva): si el visor GLB está disponible
-      // (js/landing-3d.js + WebGL), sustituye la silueta SVG por el modelo.
-      function iniciar3D() {
-        if (fx3d || !window.LUXICAR_3D || !window.LUXICAR_3D.init) return;
-        fx3d = window.LUXICAR_3D.init({
-          sticky: elSticky,
-          model: "/assets/models/car-concept/CarConcept.glb",
-          onReady: () => {
-            veh.classList.add("fx-vehicle-3d-activo");
-            root.classList.add("fx-3d-activo");
-          },
-          onError: () => { /* la silueta SVG permanece como vehículo */ },
-        });
-      }
-      iniciar3D();
-      if (!fx3d) window.addEventListener("luxicar-3d-ready", iniciar3D, { once: true });
-
       return () => {
         window.removeEventListener("resize", medir);
-        window.removeEventListener("luxicar-3d-ready", iniciar3D);
         introLoops.forEach((l) => l.pause());
-        if (fx3d) fx3d.dispose();
       };
     });
   } catch (err) {

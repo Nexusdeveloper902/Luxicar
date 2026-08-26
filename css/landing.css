@@ -277,30 +277,6 @@
   pointer-events: none;
 }
 
-/* ---------------- Capa WebGL (vehículo 3D) ---------------- */
-.fx-canvas-3d {
-  position: absolute;
-  inset: 0;
-  width: 100%; height: 100%;
-  z-index: 4;              /* por encima de escenas, por debajo del HUD (z6) */
-  pointer-events: none;
-  transition: opacity 0.2s linear;
-}
-/* cuando el GLB está listo: la silueta SVG se retira */
-.fx-vehicle-3d-activo .fx-car-svg,
-.fx-vehicle-3d-activo .fx-vehicle-glow { display: none; }
-/* con 3D activo, la foto del hero pasa a ser atmósfera */
-.fx-3d-activo .fx-photo { opacity: 0.22; filter: brightness(0.5) saturate(0.6); }
-.fx-credit {
-  position: absolute;
-  left: 8%; bottom: 3.5%;
-  margin: 0;
-  font-size: 9.5px; letter-spacing: 0.14em;
-  color: var(--muted-foreground);
-  opacity: 0.55;
-  z-index: 2;
-}
-
 /* columna derecha: gauges (2 en fila) + filas, garantizando separación */
 .fx-spec-der {
   position: absolute;
@@ -414,11 +390,6 @@
   background: radial-gradient(ellipse 62% 60% at 50% 60%, oklch(0.85 0.12 20 / 0.16) 0%, transparent 70%);
   mix-blend-mode: screen;
 }
-.fx-vehicle-3d {
-  position: absolute; inset: 0;
-  /* puntilla vacía: un visor Three.js/GLB se monta aquí si existe */
-}
-
 /* ---------------- HUD lateral ---------------- */
 .fx-hud {
   position: absolute;

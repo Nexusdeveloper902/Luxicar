@@ -269,12 +269,52 @@
   font-weight: 700; line-height: 1; letter-spacing: -0.02em;
 }
 
-/* hueco donde el coche se aparca (izquierdo inferior) */
-.fx-vehicle-spot {
+/* foto del modelo (izquierdo inferior), enmarcada con pie */
+.fx-spec-foto {
   position: absolute;
-  left: 8%; top: 38%;
-  width: 42%; height: 44%;
+  left: 7%; top: 33%;
+  width: min(45%, 660px);
+  aspect-ratio: 16 / 10;
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  background: oklch(0.12 0 0 / 0.5);
+  box-shadow: 0 34px 90px -34px oklch(0 0 0 / 0.85), 0 0 44px -18px oklch(0.85 0.1 20 / 0.28);
+  opacity: 0;
+  z-index: 1;
+}
+.fx-spec-foto .smart-img {
+  position: absolute; inset: 0;
+}
+.fx-spec-foto img {
+  will-change: transform;
+}
+.fx-spec-foto::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, oklch(0.08 0 0 / 0.82) 0%, transparent 42%);
   pointer-events: none;
+}
+.fx-spec-foto-pie {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 1.1rem 1.4rem 1.2rem;
+  display: flex; flex-direction: column; gap: 0.15rem;
+  z-index: 1;
+}
+.fx-spec-foto-eyebrow {
+  font-size: 10px; letter-spacing: 0.34em; text-transform: uppercase;
+  color: var(--signature);
+}
+.fx-spec-foto-nombre {
+  font-size: clamp(1rem, 1.6vw, 1.35rem);
+  font-weight: 600;
+  color: var(--foreground);
+}
+.fx-spec-foto-meta {
+  font-size: 11px;
+  color: var(--muted-foreground);
 }
 
 /* columna derecha: gauges (2 en fila) + filas, garantizando separación */
@@ -369,26 +409,19 @@
   box-shadow: 0 12px 60px -12px oklch(0.85 0.1 20 / 0.45);
 }
 
-/* ---------------- El vehículo persistente ---------------- */
-.fx-vehicle {
+/* ---------------- Chispa en la punta del trazo (ESC 02) ---------------- */
+.fx-punta {
   position: absolute;
   left: 0; top: 0;
-  width: clamp(300px, 33vw, 480px);
+  width: 10px; height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: var(--signature);
+  box-shadow: 0 0 14px 3px oklch(0.85 0.1 20 / 0.8), 0 0 44px 10px oklch(0.85 0.1 20 / 0.32);
   opacity: 0;
   pointer-events: none;
   will-change: transform, opacity;
-  z-index: 5;
-}
-.fx-car-svg {
-  display: block;
-  width: 100%; height: auto;
-  color: var(--foreground);
-  filter: drop-shadow(0 6px 26px oklch(0.85 0.1 20 / 0.22));
-}
-.fx-vehicle-glow {
-  position: absolute; inset: -14%;
-  background: radial-gradient(ellipse 62% 60% at 50% 60%, oklch(0.85 0.12 20 / 0.16) 0%, transparent 70%);
-  mix-blend-mode: screen;
+  z-index: 4;
 }
 /* ---------------- HUD lateral ---------------- */
 .fx-hud {

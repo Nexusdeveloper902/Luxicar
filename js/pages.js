@@ -531,10 +531,22 @@ function pageVehiculo(slug) {
     );
   }).join("");
 
+  const modelo3d = modelo3dDeVehiculo(v.id);
+  const viewerBlock = modelo3d
+    ? '<section class="anim-in mt-6 overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-card to-background" style="--dur:0.55s" aria-label="Vista 3D de ' + esc(nombre) + '">' +
+      '<div class="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 bg-card/60 px-5 py-3.5">' +
+      '<div><p class="text-eyebrow text-[10px] text-[var(--signature)]">Vista 360°</p>' +
+      '<p class="mt-0.5 text-sm font-semibold text-foreground">' + esc(nombre) + "</p></div>" +
+      '<p class="hidden text-xs text-muted-foreground sm:block">Arrastra para girar · Rueda para acercar</p>' +
+      "</div>" +
+      '<div id="viewer-3d" class="lx3d-container relative flex aspect-[16/10] w-full items-center justify-center" data-viewer="' + modelo3d + '"></div>' +
+      "</section>"
+    : "";
   const html =
     '<div class="mx-auto max-w-7xl px-4 pb-4 sm:px-6 lg:px-8">' +
     '<a href="/marketplace" data-nav class="group mt-5 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">' +
     icon("ArrowLeft", "h-4 w-4 transition-transform duration-200 group-hover:-translate-x-0.5") + "Volver al marketplace</a>" +
+    viewerBlock +
     '<div class="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">' +
     // Columna izquierda: galería
     '<div class="flex flex-col gap-3 lg:sticky lg:top-20 lg:self-start lg:h-fit">' +
@@ -610,6 +622,26 @@ function pageVehiculo(slug) {
       DB.trackEvent("VEHICLE_VIEWED");
       mountFinancing(document.getElementById("financing"), v.precio);
       mountReviews(document.getElementById("reviews"), v);
+
+      // Visor 3D local (three.js). Solo se monta si hay modelo para este vehículo.
+      let visor3d = null;
+      const ctn = document.getElementById("viewer-3d");
+      if (ctn && window.Luxicar3D && ctn.getAttribute("data-viewer")) {
+        try {
+          visor3d = window.Luxicar3D.mountViewer(ctn, ctn.getAttribute("data-viewer"), {
+            autoRotate: true,
+          });
+        } catch (e) {
+          console.error("Luxicar3D: no se pudo montar el visor", e);
+          if (ctn && ctn._lx3d) ctn._lx3d = null;
+        }
+      }
+      return () => {
+        if (visor3d && visor3d.dispose) {
+          try { visor3d.dispose(); } catch (e) {}
+        }
+        visor3d = null;
+      };
     },
   };
 }

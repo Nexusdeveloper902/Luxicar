@@ -1,0 +1,467 @@
+/* ==========================================================================
+   landing.css — Portada cinematográfica FX (sticky scenes + HUD)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Fallback estático: la experiencia por defecto (sin JS y reduced-motion)
+   -------------------------------------------------------------------------- */
+.fx-estatico { position: relative; display: block; }
+.fx-cine { display: none; }
+
+.fx-estatico-bg { position: absolute; inset: 0; overflow: hidden; }
+.fx-estatico-bg img { width: 100%; height: 100%; object-fit: cover; opacity: 0.55; }
+.fx-estatico-grad {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(to top, var(--background) 0%, transparent 60%),
+    linear-gradient(to right, oklch(0.1 0 0 / 0.55) 0%, transparent 60%);
+}
+.fx-estatico-cont {
+  position: relative;
+  z-index: 2;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: max(14vh, 96px) 24px 18vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.fx-estatico-specs {
+  margin-top: 2.5rem;
+  display: flex; gap: 2rem; align-items: flex-end; flex-wrap: wrap;
+}
+.fx-estatico-specs > div { display: flex; flex-direction: column; }
+.fx-estatico-specs b { font-size: 1.4rem; letter-spacing: -0.02em; }
+.fx-estatico-specs span { font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted-foreground); }
+.fx-estatico-cta {
+  margin-top: 2.25rem; align-self: flex-start;
+  display: inline-flex; align-items: center; gap: 0.75rem;
+  padding: 1rem 1.75rem; border-radius: 0.75rem;
+  background: var(--primary); color: var(--primary-foreground);
+  font-size: 0.875rem; font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Cinemática: una pista de ~620vh con un viewport pegado y una coreografía
+   -------------------------------------------------------------------------- */
+.fx-cinematica .fx-estatico { display: none; }
+.fx-cinematica .fx-cine { display: block; }
+
+.fx-cine { position: relative; }
+
+/* viewport pegado (sticky) */
+.fx-sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  background: var(--background);
+}
+.fx-runway { height: 520svh; }
+
+/* carga perezosa: evita animación de página en escena */
+.fx-cinematica.page-enter { animation: none; }
+
+/* escenas apiladas en el viewport pegado (estado inicial) */
+.fx-scene {
+  position: absolute; inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+/* la intro empieza visible; el timeline la apaga al scrub */
+.fx-intro { opacity: 1; }
+.fx-scene > * { pointer-events: none; }
+.fx-scene .fx-market-cta { pointer-events: auto; }
+
+/* ---------------- ESC 01 — INTRO ---------------- */
+.fx-intro { }
+
+.fx-photo, .fx-photo img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  will-change: transform;
+}
+.fx-photo-grad {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 56% at 50% 62%, transparent 30%, oklch(0.08 0 0 / 0.62) 100%),
+    linear-gradient(to top, oklch(0.08 0 0 / 0.78) 0%, transparent 40%),
+    linear-gradient(to bottom, oklch(0.08 0 0 / 0.55) 0%, transparent 32%);
+}
+.fx-grid-bg {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(to right, oklch(1 0 0 / 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 0.045) 1px, transparent 1px);
+  background-size: 7.5vw 7.5vw;
+  mask-image: radial-gradient(ellipse 85% 60% at 50% 55%, black 0%, transparent 76%);
+}
+
+.fx-intro-tipo {
+  position: absolute;
+  left: 50%; top: 47%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 3;
+}
+.fx-kicker {
+  font-size: 11px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--signature);
+  opacity: 1;
+}
+.fx-titulo {
+  margin-top: 1.5rem;
+  font-family: "Geist", sans-serif;
+  font-size: clamp(4.5rem, 15vw, 13.5rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 0.95;
+  color: var(--foreground);
+  display: flex; gap: 0.01em; justify-content: center;
+  text-shadow: 0 0 90px oklch(0.6 0.1 20 / 0.35);
+}
+.fx-char { display: inline-block; will-change: transform, opacity; }
+.fx-sub {
+  margin-top: 2rem;
+  color: var(--muted-foreground);
+  font-size: 1.05rem;
+  max-width: 44ch;
+  margin-inline: auto;
+}
+
+/* chips de telemetría alrededor del título */
+.fx-chips {
+  position: absolute; inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.fx-chip {
+  position: absolute;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  background: oklch(0.14 0.004 80 / 0.55);
+  backdrop-filter: blur(9px);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--foreground);
+  opacity: 0.92;
+  white-space: nowrap;
+}
+.fx-chip::before, .fx-chip::after {
+  content: "";
+  position: absolute;
+  background: var(--signature);
+  box-shadow: 0 0 12px var(--signature);
+  width: 26px; height: 1px;
+  opacity: 0.7;
+}
+.fx-chip::before { left: -30px; top: 50%; }
+.fx-chip::after  { right: -30px; top: 50%; }
+/* Posiciones en cuatro esquinas — evitando el carril HUD (izquierda ~3%) */
+.fx-chip-a { right: 11%; bottom: 21%; }
+.fx-chip-b { left: 10%;  top: 26%; }
+.fx-chip-c { right: 10%; top: 26%; }
+.fx-chip-d { left: 12%;  bottom: 21%; }
+
+/* anillos orbitando (cluster) */
+.fx-rings {
+  position: absolute; inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.8;
+}
+.fx-ring-a {
+  position: absolute;
+  left: 50%; top: 47%;
+  width: min(88vmin, 780px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  stroke: var(--signature);
+  fill: none;
+  stroke-width: 1;
+  opacity: 0.85;
+  will-change: transform;
+}
+.fx-ring-fine { opacity: 0.35; }
+
+/* pista de scroll en el hero */
+.fx-scroll-hint {
+  position: absolute;
+  bottom: 3.2rem; left: 50%;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
+  font-size: 10px; letter-spacing: 0.42em; text-transform: uppercase;
+  color: var(--muted-foreground);
+  opacity: 0.9;
+  z-index: 3;
+}
+.fx-scroll-hint i {
+  display: block;
+  width: 1px; height: 44px;
+  background: linear-gradient(to bottom, var(--signature), transparent);
+  transform-origin: top;
+  box-shadow: 0 0 14px var(--signature);
+}
+
+/* ---------------- ESC 02 — CIRCUITO ---------------- */
+.fx-track { opacity: 0; }
+.fx-circuit-svg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  color: var(--signature);
+}
+.fx-path {
+  filter: drop-shadow(0 0 12px oklch(0.75 0.12 20 / 0.45));
+  will-change: stroke-dashoffset;
+}
+.fx-rama { opacity: 0.4; }
+.fx-rama-p { fill: currentColor; opacity: 0.45; }
+
+/* nodo de marca sobre el circuito */
+.fx-nodo { opacity: 0.04; transition: opacity 0.5s; }
+.fx-nodo.on { opacity: 1; }
+.fx-nodo-c {
+  fill: oklch(0.15 0 0 / 0.9);
+  stroke: var(--signature);
+  stroke-width: 1.5;
+}
+.fx-nodo-marco {
+  fill: oklch(0.15 0 0 / 0.72);
+  stroke: var(--border);
+  stroke-width: 1;
+}
+.fx-nodo-t {
+  fill: var(--foreground);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+}
+
+/* ---------------- ESC 03 — FICHA ---------------- */
+.fx-specs { opacity: 0; }
+.fx-blueprint {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(to right, oklch(1 0 0 / 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 0.035) 1px, transparent 1px);
+  background-size: 6.25vw 6.25vw;
+}
+.fx-blueprint::after {
+  content: "";
+  position: absolute; inset: 16% 9%;
+  border: 1px solid var(--border);
+  opacity: 0.5;
+}
+.fx-spec-cab {
+  position: absolute;
+  left: 9%; top: 11%;
+  z-index: 2;
+  text-align: left;
+}
+.fx-spec-titulo {
+  color: var(--foreground);
+  font-size: clamp(2.6rem, 6vw, 5.5rem);
+  font-weight: 700; line-height: 1; letter-spacing: -0.02em;
+}
+
+/* hueco donde el coche se aparca (izquierdo inferior) */
+.fx-vehicle-spot {
+  position: absolute;
+  left: 8%; top: 38%;
+  width: 42%; height: 44%;
+  pointer-events: none;
+}
+
+/* ---------------- Capa WebGL (vehículo 3D) ---------------- */
+.fx-canvas-3d {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  z-index: 4;              /* por encima de escenas, por debajo del HUD (z6) */
+  pointer-events: none;
+  transition: opacity 0.2s linear;
+}
+/* cuando el GLB está listo: la silueta SVG se retira */
+.fx-vehicle-3d-activo .fx-car-svg,
+.fx-vehicle-3d-activo .fx-vehicle-glow { display: none; }
+/* con 3D activo, la foto del hero pasa a ser atmósfera */
+.fx-3d-activo .fx-photo { opacity: 0.22; filter: brightness(0.5) saturate(0.6); }
+.fx-credit {
+  position: absolute;
+  left: 8%; bottom: 3.5%;
+  margin: 0;
+  font-size: 9.5px; letter-spacing: 0.14em;
+  color: var(--muted-foreground);
+  opacity: 0.55;
+  z-index: 2;
+}
+
+/* columna derecha: gauges (2 en fila) + filas, garantizando separación */
+.fx-spec-der {
+  position: absolute;
+  right: 6%; top: 17%;
+  width: min(46vw, 620px);
+  display: flex; flex-direction: column; gap: 6vh;
+  z-index: 2;
+}
+.fx-gauges {
+  display: flex; flex-direction: row; justify-content: space-around; gap: 2rem;
+}
+.fx-gauge { text-align: center; color: var(--signature); flex: 1; }
+.fx-gauge figcaption {
+  margin-top: 0.55rem;
+  font-size: 10px; letter-spacing: 0.34em; text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.fx-gauge svg { width: clamp(140px, 15vw, 232px); height: auto; display: block; margin: 0 auto; overflow: visible; }
+.fx-gauge-ticks { opacity: 0.33; }
+.fx-gauge-base { opacity: 0.16; stroke-width: 5; }
+.fx-gauge-arc { stroke-width: 4; will-change: stroke-dasharray; }
+.fx-gauge-val {
+  fill: var(--foreground);
+  font-size: 30px; font-weight: 700; font-family: "Geist Mono", monospace;
+}
+.fx-gauge-unidad {
+  fill: var(--muted-foreground);
+  font-size: 10px; letter-spacing: 0.28em;
+}
+
+/* filas de specs (dentro de la columna derecha) */
+.fx-filas {
+  display: flex; flex-direction: column; gap: 1.05rem;
+  list-style: none;
+  padding: 0;
+}
+.fx-fila {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline; gap: 1rem;
+  font-variant-numeric: tabular-nums;
+  will-change: transform, opacity;
+}
+.fx-fila-etq {
+  font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+.fx-fila-linea {
+  height: 1px; background: var(--border);
+  position: relative;
+}
+.fx-fila-linea::after {
+  content: "";
+  position: absolute; right: 0; top: -2.5px;
+  width: 6px; height: 6px;
+  border: 1px solid var(--signature); border-radius: 50%;
+}
+.fx-fila-val {
+  color: var(--foreground);
+  font-size: clamp(1.15rem, 2vw, 1.7rem);
+  font-weight: 600; letter-spacing: -0.01em;
+  font-family: "Geist Mono", monospace;
+  text-align: right; white-space: nowrap;
+}
+
+/* ---------------- ESC 04 — MERCADO ---------------- */
+.fx-market { opacity: 0; display: grid; place-items: center; }
+.fx-market-box {
+  text-align: center;
+  padding: 2.5rem 3rem;
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  background: oklch(0.13 0.004 80 / 0.88);
+  backdrop-filter: blur(16px);
+  will-change: transform, opacity;
+}
+.fx-market-titulo {
+  color: var(--foreground);
+  font-size: clamp(2rem, 4.6vw, 3.6rem);
+  font-weight: 700; line-height: 1.08; letter-spacing: -0.02em;
+}
+.fx-market-brillante { color: var(--signature); }
+.fx-market-cta {
+  margin-top: 1.75rem;
+  display: inline-flex; align-items: center; gap: 0.75rem;
+  padding: 1.1rem 1.9rem; border-radius: 0.85rem;
+  background: var(--primary); color: var(--primary-foreground);
+  font-weight: 600; font-size: 0.925rem;
+  box-shadow: 0 12px 60px -12px oklch(0.85 0.1 20 / 0.45);
+}
+
+/* ---------------- El vehículo persistente ---------------- */
+.fx-vehicle {
+  position: absolute;
+  left: 0; top: 0;
+  width: clamp(300px, 33vw, 480px);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+  z-index: 5;
+}
+.fx-car-svg {
+  display: block;
+  width: 100%; height: auto;
+  color: var(--foreground);
+  filter: drop-shadow(0 6px 26px oklch(0.85 0.1 20 / 0.22));
+}
+.fx-vehicle-glow {
+  position: absolute; inset: -14%;
+  background: radial-gradient(ellipse 62% 60% at 50% 60%, oklch(0.85 0.12 20 / 0.16) 0%, transparent 70%);
+  mix-blend-mode: screen;
+}
+.fx-vehicle-3d {
+  position: absolute; inset: 0;
+  /* puntilla vacía: un visor Three.js/GLB se monta aquí si existe */
+}
+
+/* ---------------- HUD lateral ---------------- */
+.fx-hud {
+  position: absolute;
+  inset-block: 0; left: 2.6%;
+  display: flex; flex-direction: column; justify-content: center; gap: 2.4rem;
+  pointer-events: none;
+  z-index: 6;
+  font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.fx-hud-caps { display: flex; flex-direction: column; gap: 0.9rem; }
+.fx-hud-caps li {
+  opacity: 0.32; transition: opacity 0.35s;
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.fx-hud-caps li::before {
+  content: ""; width: 6px; height: 1px;
+  background: currentColor;
+}
+.fx-hud-caps li.activo { opacity: 1; color: var(--foreground); }
+.fx-hud-marc {
+  height: 26svh; width: 2px;
+  background: var(--border);
+  position: relative; overflow: hidden;
+}
+.fx-hud-marc i {
+  position: absolute; inset: 0;
+  background: var(--signature);
+  transform: scaleY(0);
+  transform-origin: top;
+  display: block;
+  will-change: transform;
+  box-shadow: 0 0 12px var(--signature);
+}
+.fx-hud-pct { font-family: "Geist Mono", monospace; color: var(--foreground); font-size: 11px; }
+
+/* --------------------------------------------------------------------------
+   Pantallas pequeñas: la cinemática se desactiva por JS (createScope gate)
+   o si el usuario prefiere movimiento reducido.
+   -------------------------------------------------------------------------- */
+@media (max-width: 1023.98px) {
+  .fx-estatico { display: block; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-estatico .anim-in { animation: none; opacity: 1; }
+}

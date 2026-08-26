@@ -35,17 +35,26 @@
   </script>
   <link rel="stylesheet" href="/css/base.css" />
   <link rel="stylesheet" href="/css/app.css" />
+  <link rel="stylesheet" href="/css/landing.css" />
 </head>
 <body class="antialiased bg-background text-foreground">
   <div id="app"></div>
   <div id="modal-root"></div>
   <div id="toast-root" class="pointer-events-none fixed bottom-4 right-4 z-[100] flex w-full max-w-sm flex-col gap-2 px-4 sm:px-0" aria-live="polite"></div>
+  <!-- anime.js v4 (UMD, vendor local) expone window.anime para la cinemática FX -->
+  <script src="/js/vendor/anime.umd.min.js"></script>
+  <!-- three.js (módulos vendored) para el vehículo GLB de la portada -->
+  <script type="importmap">
+    { "imports": { "three": "/js/vendor/three/three.module.min.js", "three/addons/": "/js/vendor/three/" } }
+  </script>
+  <script type="module" src="/js/landing-3d.js"></script>
   <script src="/js/icons.js"></script>
   <script src="/js/data.js"></script>
   <script src="/js/admin-data.js"></script>
   <script src="/js/store.js"></script>
   <script src="/js/charts.js"></script>
   <script src="/js/components.js"></script>
+  <script src="/js/landing.js"></script>
   <script src="/js/pages.js"></script>
   <script src="/js/pages-cuenta.js"></script>
   <script src="/js/pages-auth.js"></script>

@@ -8,8 +8,7 @@
 // ---------------------------------------------------------------------------
 function pageHome() {
   const vehiculos = DB.vehiculos();
-  const hero = vehiculos.find((v) => v.id === "porsche-911-carrera") || vehiculos[0];
-  const showcase = vehiculos.find((v) => v.id === "lamborghini-revuelto") || vehiculos[0];
+  const heroVeh = vehiculos.find((v) => v.id === "lamborghini-revuelto") || vehiculos[0];
   const destacadosIds = [
     "mclaren-750s", "rolls-royce-ghost", "lamborghini-revuelto",
     "porsche-taycan-turbos", "rivian-r1t", "dodge-demon-170",
@@ -24,34 +23,11 @@ function pageHome() {
     ["Headset", "Experiencia premium", "Cada detalle diseñado para que explorar sea tan emocionante como conducir."],
   ];
 
-  const specsShowcase = [
-    [formatearNumero(showcase.potencia), "Caballos"],
-    [showcase.aceleracion0a100 + "s", "0—100 km/h"],
-    [formatearNumero(showcase.velocidadMaxima), "Vel. máxima km/h"],
-  ];
-
   const html =
-    // --- Hero cinematográfico ---
-    '<section id="hero" class="relative flex min-h-[100svh] items-end overflow-hidden">' +
-    '<div class="parallax-layer absolute inset-0 z-0" id="hero-bg">' +
-    smartImg(hero.imagenes[0], hero.marca + " " + hero.modelo, { priority: true }) +
-    '<div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div>' +
-    '<div class="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-transparent"></div>' +
-    "</div>" +
-    '<div class="relative z-10 mx-auto w-full max-w-7xl px-4 pb-20 sm:px-6 sm:pb-28 lg:px-8 lg:pb-32" id="hero-content">' +
-    '<div class="max-w-2xl">' +
-    '<p class="anim-in text-eyebrow text-[11px] text-[var(--signature)]" style="--dur:0.8s;--from-y:12px">Digital Marketplace · Alta Gama</p>' +
-    '<h1 class="anim-in text-display mt-6 text-5xl text-foreground sm:text-7xl lg:text-8xl xl:text-[7.5rem]" style="--dur:1s;--delay:0.15s;--from-y:24px">Pura<br><span class="text-gradient">adrenalina</span></h1>' +
-    '<p class="anim-in mt-7 max-w-md text-base leading-relaxed text-muted-foreground sm:text-lg" style="--dur:1s;--delay:0.3s;--from-y:24px">Los automóviles más extraordinarios del mundo, reunidos en una sola colección.</p>' +
-    '<div class="anim-in mt-10" style="--dur:1s;--delay:0.45s;--from-y:24px">' +
-    '<a href="/marketplace" data-nav class="group inline-flex items-center gap-3 rounded-xl bg-primary px-7 py-4 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:gap-4 hover:shadow-[0_12px_40px_-8px_oklch(0.98_0_0/0.35)] active:scale-[0.98]">Explorar vehículos ' +
-    icon("ArrowRight", "h-4 w-4 transition-transform duration-300 group-hover:translate-x-1") + "</a>" +
-    "</div></div></div>" +
-    '<div class="absolute bottom-8 left-1/2 z-10 hidden -translate-x-1/2 lg:block" id="hero-scroll-hint">' +
-    '<div class="scroll-hint">' + icon("ChevronDown", "h-5 w-5 text-muted-foreground/60", 1.5) + "</div>" +
-    "</div></section>" +
+    // --- Secuencia cinematográfica scroll-driven (INTRO/CIRCUITO/FICHA/MERCADO) ---
+    landingStageHtml(heroVeh, heroVeh) +
     // --- Selección destacada ---
-    '<section class="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:py-40">' +
+    '<section class="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:py-40" id="seleccion">' +
     '<div class="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">' +
     '<div class="max-w-2xl">' +
     '<p class="anim-view text-eyebrow text-[11px] text-[var(--signature)]" style="--dur:0.5s;--from-y:10px">Nuestra Selección</p>' +
@@ -64,30 +40,6 @@ function pageHome() {
     '<div class="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:gap-8">' +
     destacados.map((v, i) => vehicleCard(v, { etiquetaBoton: "Explorar vehículo", index: i })).join("") +
     "</div></section>" +
-    // --- Showcase cinematográfico ---
-    '<section id="showcase" class="relative flex min-h-[90svh] items-center overflow-hidden border-y border-border/40">' +
-    '<div class="parallax-layer absolute inset-0 z-0" id="showcase-bg">' +
-    smartImg(showcase.imagenes[1] || showcase.imagenes[0], showcase.marca + " " + showcase.modelo, {}) +
-    '<div class="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent"></div>' +
-    '<div class="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-background/30"></div>' +
-    "</div>" +
-    '<div class="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8"><div class="max-w-xl">' +
-    '<p class="anim-view text-eyebrow text-[11px] text-[var(--signature)]" style="--dur:0.6s">' + esc(showcase.marca) + "</p>" +
-    '<h2 class="anim-view text-display mt-5 text-4xl text-foreground sm:text-6xl lg:text-7xl" style="--dur:0.8s;--delay:0.1s;--from-y:24px">' + esc(showcase.modelo) + "</h2>" +
-    '<p class="anim-view mt-6 max-w-md text-base leading-relaxed text-muted-foreground sm:text-lg" style="--dur:0.8s;--delay:0.2s;--from-y:24px">Ingeniería que redefine los límites. Una síntesis perfecta entre tradición y futuro.</p>' +
-    '<div class="anim-view mt-10 flex items-center gap-8 sm:gap-10" style="--dur:0.8s;--delay:0.3s;--from-y:24px">' +
-    specsShowcase.map((s, i) =>
-      (i > 0 ? '<div class="h-10 w-px bg-border/60"></div>' : "") +
-      "<div>" +
-      '<p class="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">' + s[0] + "</p>" +
-      '<p class="mt-1 text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">' + s[1] + "</p>" +
-      "</div>"
-    ).join("") +
-    "</div>" +
-    '<div class="anim-view mt-10" style="--dur:0.8s;--delay:0.4s;--from-y:24px">' +
-    '<a href="/vehiculos/' + showcase.id + '" data-nav class="group inline-flex items-center gap-3 rounded-xl border border-border/70 bg-background/40 px-7 py-3.5 text-sm font-semibold text-foreground backdrop-blur-md transition-all duration-300 hover:bg-background/60 hover:gap-4 active:scale-[0.98]">Descubrir el vehículo ' +
-    icon("ArrowUpRight", "h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5") + "</a>" +
-    "</div></div></div></section>" +
     // --- Por qué elegirnos ---
     '<section class="border-y border-border/40 bg-secondary/20">' +
     '<div class="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:py-40">' +
@@ -127,40 +79,9 @@ function pageHome() {
     title: "Vehículos de Alta Gama · Digital Marketplace",
     html: siteShell("/", html),
     mount() {
-      // Parallax del hero y del showcase (equivale a useScroll/useTransform).
-      const heroBg = document.getElementById("hero-bg");
-      const heroContent = document.getElementById("hero-content");
-      const showcaseBg = document.getElementById("showcase-bg");
-      const showcaseSec = document.getElementById("showcase");
-      const hint = document.getElementById("hero-scroll-hint");
-      let raf = null;
-      function onScroll() {
-        if (raf) return;
-        raf = requestAnimationFrame(() => {
-          raf = null;
-          const y = window.scrollY;
-          const vh = window.innerHeight;
-          if (heroBg) {
-            const p = Math.min(1, Math.max(0, y / vh));
-            heroBg.style.transform = "translateY(" + p * 80 + "px) scale(" + (1 + p * 0.08) + ")";
-            if (heroContent) {
-              heroContent.style.transform = "translateY(" + p * -30 + "px)";
-              heroContent.style.opacity = String(1 - Math.min(1, p / 0.6));
-            }
-            if (hint) hint.style.opacity = String(1 - Math.min(1, p / 0.6));
-          }
-          if (showcaseBg && showcaseSec) {
-            const r = showcaseSec.getBoundingClientRect();
-            const prog = Math.min(1, Math.max(0, (vh - r.top) / (vh + r.height)));
-            const ty = -8 + prog * 16;
-            const sc = prog < 0.5 ? 1.1 - prog * 0.2 : 1 + (prog - 0.5) * 0.1;
-            showcaseBg.style.transform = "translateY(" + ty + "%) scale(" + sc.toFixed(3) + ")";
-          }
-        });
-      }
-      window.addEventListener("scroll", onScroll, { passive: true });
-      onScroll();
-      return () => window.removeEventListener("scroll", onScroll);
+      // La cinemática se monta solo si anime.js está disponible; en cualquier
+      // caso el fallback estático queda renderizado por CSS.
+      return mountLanding() || undefined;
     },
   };
 }

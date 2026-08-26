@@ -243,7 +243,14 @@
 }
 
 /* ---------------- ESC 03 — FICHA ---------------- */
-.fx-specs { opacity: 0; }
+.fx-specs {
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  gap: 4vw;
+  /* padding lateral: la izquierda despeja el HUD de capítulos */
+  padding: 26vh 6% 8vh max(235px, 15%);
+}
 .fx-blueprint {
   position: absolute; inset: 0;
   background-image:
@@ -271,9 +278,8 @@
 
 /* foto del modelo (izquierdo inferior), enmarcada con pie */
 .fx-spec-foto {
-  position: absolute;
-  left: 7%; top: 33%;
-  width: min(45%, 660px);
+  position: relative;
+  flex: 0 1 620px;
   aspect-ratio: 16 / 10;
   margin: 0;
   border: 1px solid var(--border);
@@ -319,9 +325,10 @@
 
 /* columna derecha: gauges (2 en fila) + filas, garantizando separación */
 .fx-spec-der {
-  position: absolute;
-  right: 6%; top: 17%;
+  position: relative;
+  margin-left: auto;
   width: min(46vw, 620px);
+  flex-shrink: 1;
   display: flex; flex-direction: column; gap: 6vh;
   z-index: 2;
 }

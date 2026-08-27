@@ -335,72 +335,16 @@ select.select-premium option {
 }
 /* ==========================================================================
    Visor 3D (three.js) — vehículos
+   Los estilos del visor (escenario, overlay de carga, controles, tag, pista)
+   los inyecta el propio bundle `luxicar3d.min.js` bajo el mismo namespace
+   `.lx3d-*`; aquí solo quedan los mínimos de contenedor.
    ========================================================================== */
 .lx3d-container {
-  background:
-    radial-gradient(120% 90% at 50% 8%, rgba(255, 255, 255, 0.05), transparent 60%),
-    radial-gradient(90% 70% at 50% 110%, rgba(255, 255, 255, 0.04), transparent 55%),
-    var(--background);
   overflow: hidden;
   touch-action: none;
   -webkit-user-select: none;
   user-select: none;
 }
-.lx3d-container canvas {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
-}
-.lx3d-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  color: var(--muted-foreground);
-  pointer-events: none;
-  z-index: 2;
-  transition: opacity 0.35s ease;
-}
-.lx3d-overlay.lx3d-hidden {
-  opacity: 0;
-}
-.lx3d-overlay-text {
-  font-size: 0.8rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-}
-.lx3d-spinner {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.12);
-  border-top-color: var(--signature);
-  animation: lx3d-spin 0.9s linear infinite;
-}
-@keyframes lx3d-spin {
-  to { transform: rotate(360deg); }
-}
-.lx3d-error-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: var(--background);
-  background: var(--muted-foreground);
-}
 .lx3d-failed .lx3d-container {
   opacity: 0.6;
-}
-.lx3d-container.lx3d-interacting {
-  cursor: grabbing;
-}
-.lx3d-container {
-  cursor: grab;
 }

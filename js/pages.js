@@ -531,15 +531,15 @@ function pageVehiculo(slug) {
     );
   }).join("");
 
-  const modelo3d = modelo3dDeVehiculo(v.id);
-  const viewerBlock = modelo3d
+  const modelo3dCfg = modelo3dConfigDeVehiculo(v.id) || null;
+  const viewerBlock = modelo3dCfg
     ? '<section class="anim-in mt-6 overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-card to-background" style="--dur:0.55s" aria-label="Vista 3D de ' + esc(nombre) + '">' +
       '<div class="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 bg-card/60 px-5 py-3.5">' +
       '<div><p class="text-eyebrow text-[10px] text-[var(--signature)]">Vista 360°</p>' +
       '<p class="mt-0.5 text-sm font-semibold text-foreground">' + esc(nombre) + "</p></div>" +
       '<p class="hidden text-xs text-muted-foreground sm:block">Arrastra para girar · Rueda para acercar</p>' +
       "</div>" +
-      '<div id="viewer-3d" class="lx3d-container relative flex aspect-[16/10] w-full items-center justify-center" data-viewer="' + modelo3d + '"></div>' +
+      '<div id="viewer-3d" class="lx3d-container relative flex aspect-[16/10] w-full items-center justify-center" data-viewer="' + modelo3dCfg.url + '" data-viewer-yaw="' + modelo3dCfg.yaw + '"></div>' +
       "</section>"
     : "";
   const html =
@@ -628,8 +628,10 @@ function pageVehiculo(slug) {
       const ctn = document.getElementById("viewer-3d");
       if (ctn && window.Luxicar3D && ctn.getAttribute("data-viewer")) {
         try {
+          const yaw = parseFloat(ctn.getAttribute("data-viewer-yaw") || "0") || 0;
           visor3d = window.Luxicar3D.mountViewer(ctn, ctn.getAttribute("data-viewer"), {
             autoRotate: true,
+            yaw: yaw,
           });
         } catch (e) {
           console.error("Luxicar3D: no se pudo montar el visor", e);

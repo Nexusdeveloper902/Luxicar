@@ -17,13 +17,16 @@
 // ============================================================================
 
 const MODEL3D_STAGES = {
+  // --- SUVs / crossovers añadidos en auditoría 2026 ----------------------------------
+  "mazda-cx5": { glb: "/assets/3d/cars/mazda-cx5.glb", yaw: 0 }, // CX-5 KF real (antes fallback Tucson)
+
   // --- Superdeportivos / deportivos -------------------------------------------------
-  "lambo-huracan": { glb: "/assets/3d/cars/lambo-huracan.glb", yaw: 180 },
+  "lambo-huracan": { glb: "/assets/3d/cars/lambo-huracan.glb", yaw: 0 },
   "lambo-aventador-svj": { glb: "/assets/3d/cars/lambo-aventador-svj.glb", yaw: 0 },
   "lambo-revuelto": { glb: "/assets/3d/cars/lambo-revuelto.glb", yaw: 0 },
   "lambo-urus": { glb: "/assets/3d/cars/lambo-urus.glb", yaw: 0 },
-  "ferrari-296": { glb: "/assets/3d/cars/ferrari-296.glb", yaw: 90 },
-  "ferrari-f812": { glb: "/assets/3d/cars/ferrari-f812.glb", yaw: 180 },
+  "ferrari-296": { glb: "/assets/3d/cars/ferrari-296.glb", yaw: 0 },
+  "ferrari-f812": { glb: "/assets/3d/cars/ferrari-f812.glb", yaw: 0 },
   "ferrari-roma": { glb: "/assets/3d/cars/ferrari-roma.glb", yaw: 90 },
   "ferrari-sf90": { glb: "/assets/3d/cars/ferrari-sf90.glb", yaw: 0 },
   "mclaren-artura": { glb: "/assets/3d/cars/mclaren-artura.glb", yaw: 0 }, // 2023 (reemplaza al 12C erróneo)
@@ -41,14 +44,13 @@ const MODEL3D_STAGES = {
   "toyota-land-cruiser": { glb: "/assets/3d/cars/toyota-land-cruiser.glb", yaw: 0 }, // LC300
   "nissan-gtr": { glb: "/assets/3d/cars/nissan-gtr.glb", yaw: 0 }, // R35 facelift
   "nissan-z": { glb: "/assets/3d/cars/nissan-z.glb", yaw: 180 }, // RZ34
-  "mercedes-amg-gt": { glb: "/assets/3d/cars/mercedes-amg-gt.glb", yaw: 0 }, // C190
   "chevrolet-camaro": { glb: "/assets/3d/cars/chevrolet-camaro.glb", yaw: 0 }, // 6ª gen
   "chevrolet-corvette-z06": { glb: "/assets/3d/cars/chevrolet-corvette-z06.glb", yaw: 0 }, // C8 Z06
   "dodge-challenger": { glb: "/assets/3d/cars/dodge-challenger.glb", yaw: 0 }, // LC
   "dodge-charger": { glb: "/assets/3d/cars/dodge-charger.glb", yaw: 0 }, // LD Hellcat Daytona
   "ford-mustang": { glb: "/assets/3d/cars/ford-mustang.glb", yaw: 0 }, // S650 (2024)
   "ford-gt": { glb: "/assets/3d/cars/ford-gt.glb", yaw: 0 }, // 2ª gen (2017)
-  "honda-nsx": { glb: "/assets/3d/cars/honda-nsx.glb", yaw: 180 }, // NC1 (2016+)
+  "honda-nsx": { glb: "/assets/3d/cars/honda-nsx.glb", yaw: 0 }, // NC1 (2016+)
   "mazda-mx5": { glb: "/assets/3d/cars/mazda-mx5.glb", yaw: 0 }, // ND
   "aston-martin-vantage": { glb: "/assets/3d/cars/aston-martin-vantage.glb", yaw: 0 },
   "aston-martin-db12": { glb: "/assets/3d/cars/aston-martin-db12.glb", yaw: 180 },
@@ -69,25 +71,25 @@ const MODEL3D_STAGES = {
   "kia-stinger": { glb: "/assets/3d/cars/kia-stinger.glb", yaw: 0 },
   "honda-accord": { glb: "/assets/3d/cars/honda-accord.glb", yaw: 0 },
   "toyota-camry": { glb: "/assets/3d/cars/toyota-camry.glb", yaw: 0 }, // XV70
-  "porsche-panamera": { glb: "/assets/3d/cars/porsche-panamera.glb", yaw: 0 }, // 971 Sport Turismo
 
   // --- SUVs ---------------------------------------------------------------------------
   "audi-sq8": { glb: "/assets/3d/cars/audi-sq8.glb", yaw: 0 },
   "bentley-bentayga": { glb: "/assets/3d/cars/bentley-bentayga.glb", yaw: 0 },
   "porsche-cayenne": { glb: "/assets/3d/cars/porsche-cayenne.glb", yaw: 0 }, // Turbo GT
   "bmw-x5m": { glb: "/assets/3d/cars/bmw-x5m.glb", yaw: 0 }, // G05 Competition
-  "mercedes-gle63": { glb: "/assets/3d/cars/mercedes-gle63.glb", yaw: 270 }, // V167 Coupé
+  "mercedes-gle63": { glb: "/assets/3d/cars/mercedes-gle63.glb", yaw: 0 }, // V167 Coupé
   "mercedes-g63": { glb: "/assets/3d/cars/mercedes-g63.glb", yaw: 0 }, // W463
   "jeep-trackhawk": { glb: "/assets/3d/cars/jeep-trackhawk.glb", yaw: 0 },
   "jeep-wrangler": { glb: "/assets/3d/cars/jeep-wrangler.glb", yaw: 0 }, // Rubicon 392
   "chevrolet-tahoe": { glb: "/assets/3d/cars/chevrolet-tahoe.glb", yaw: 0 },
-  "rolls-royce-cullinan": { glb: "/assets/3d/cars/rolls-royce-cullinan.glb", yaw: 270 },
+  "rolls-royce-cullinan": { glb: "/assets/3d/cars/rolls-royce-cullinan.glb", yaw: 0 },
   "tesla-model-x": { glb: "/assets/3d/cars/tesla-model-x.glb", yaw: 0 },
   "volkswagen-touareg": { glb: "/assets/3d/cars/volkswagen-touareg.glb", yaw: 0 }, // R eHybrid
   "volvo-xc60": { glb: "/assets/3d/cars/volvo-xc60.glb", yaw: 0 },
   "volvo-xc90": { glb: "/assets/3d/cars/volvo-xc90.glb", yaw: 0 },
   "lexus-rx": { glb: "/assets/3d/cars/lexus-rx.glb", yaw: 0 }, // RX500h F Sport
   "hyundai-tucson": { glb: "/assets/3d/cars/hyundai-tucson.glb", yaw: 0 }, // NX4
+  "hyundai-veloster": { glb: "/assets/3d/cars/hyundai-veloster.glb", yaw: 90 }, // N (ya no usado como fallback del i30 N)
   "hyundai-ioniq5n": { glb: "/assets/3d/cars/hyundai-ioniq5n.glb", yaw: 0 },
   "kia-ev6": { glb: "/assets/3d/cars/kia-ev6.glb", yaw: 0 },
   "volkswagen-id4": { glb: "/assets/3d/cars/volkswagen-id4.glb", yaw: 0 },
@@ -102,19 +104,20 @@ const MODEL3D_STAGES = {
   "chevrolet-silverado": { glb: "/assets/3d/cars/chevrolet-silverado.glb", yaw: 0 },
   "rivian-r1t": { glb: "/assets/3d/cars/rivian-r1t.glb", yaw: 0 },
   "nissan-frontier": { glb: "/assets/3d/cars/nissan-frontier.glb", yaw: 0 },
-  "tesla-cybertruck": { glb: "/assets/3d/cars/tesla-cybertruck.glb", yaw: 180 },
+  "tesla-cybertruck": { glb: "/assets/3d/cars/tesla-cybertruck.glb", yaw: 0 },
 
   // --- Compactos / hot hatch ----------------------------------------------------------
   "honda-civic-typer": { glb: "/assets/3d/cars/honda-civic-typer.glb", yaw: 0 }, // FL5
   "toyota-gr-corolla": { glb: "/assets/3d/cars/toyota-gr-corolla.glb", yaw: 90 },
-  "hyundai-i30n": { glb: "/assets/3d/cars/hyundai-veloster.glb", yaw: 90 }, // fallback: Veloster N
+  "hyundai-i30n": { glb: "/assets/3d/cars/hyundai-i30n.glb", yaw: 0 }, // i30 N real (antes fallback Veloster N)
   "renault-megane": { glb: "/assets/3d/cars/renault-megane.glb", yaw: 180 }, // RS Trophy
   "peugeot-308": { glb: "/assets/3d/cars/peugeot-308.glb", yaw: 0 },
   "peugeot-508": { glb: "/assets/3d/cars/peugeot-508.glb", yaw: 0 }, // PSE
-  "volkswagen-golf": { glb: "/assets/3d/cars/volkswagen-golf.glb", yaw: 180 }, // Mk8
+  "volkswagen-golf": { glb: "/assets/3d/cars/volkswagen-golf.glb", yaw: 0 }, // Mk8 Golf R
   "suzuki-swift": { glb: "/assets/3d/cars/suzuki-swift.glb", yaw: 0 }, // ZC33S
   "subaru-wrx": { glb: "/assets/3d/cars/subaru-wrx.glb", yaw: 0 }, // VB
   "honda-integra": { glb: "/assets/3d/cars/honda-integra.glb", yaw: 0 },
+  "rivian-r1s": { glb: "/assets/3d/cars/rivian-r1s.glb", yaw: 0 }, // R1S real (antes fallback SQ8)
 };
 
 // vehicle id -> stage. Un anuncio puede reusar el stage de otro si comparte
@@ -171,7 +174,7 @@ const MODEL3D_MAP = {
   "lamborghini-urus-performante": "lambo-urus",
   "lexus-lc500": "lexus-lc500",
   "lexus-rx-fsport": "lexus-rx",
-  "mazda-cx5": "hyundai-tucson",
+  "mazda-cx5": "mazda-cx5",
   "mazda-mx5-miata": "mazda-mx5",
   "mclaren-750s": "mclaren-720s",
   "mclaren-artura": "mclaren-artura",
@@ -190,7 +193,7 @@ const MODEL3D_MAP = {
   "porsche-taycan-turbos": "porsche-taycan",
   "renault-arkana": "renault-arkana",
   "renault-megane-rs": "renault-megane",
-  "rivian-r1s": "audi-sq8",
+  "rivian-r1s": "rivian-r1s",
   "rivian-r1t": "rivian-r1t",
   "rolls-royce-cullinan": "rolls-royce-cullinan",
   "rolls-royce-ghost": "rolls-royce-ghost",
@@ -213,23 +216,25 @@ const MODEL3D_MAP = {
 
 // Vehículos cuyo stage sigue siendo una aproximación (no el modelo exacto).
 // Clave: id de vehículo -> modelo anunciado vs. stage usado y por qué.
+// Auditoría 2026-08: se retiraron de esta lista i30 N, CX-5, GLE 63 (cupé), Cullinan,
+// Urus, 812, NSX, S63, Taycan, GT-R, M4, M5, Huracán, Camaro y Swift Sport — ahora
+// usan el modelo correcto de su generación/versión.
 const MODEL3D_FALLBACK = {
-  "hyundai-i30n": "Hyundai i30 N -> Hyundai Veloster N (hot hatch N de Hyundai; no hay i30 N de calidad descargable)",
-  "mazda-cx5": "Mazda CX-5 (KF) -> Hyundai Tucson NX4 (crossover compacto actual; no hay CX-5 con licencia descargable)",
-  "rivian-r1s": "Rivian R1S -> Audi SQ8 (SUV de lujo; no hay modelo R1S descargable)",
   "dodge-demon-170": "Challenger SRT Demon 170 -> Dodge Challenger SRT Hellcat (misma carrocería LD; el Demon añade capó/aero específico)",
-  "chevrolet-camaro-zl1": "Camaro ZL1 (6ª gen) -> Chevrolet Camaro SS (6ª gen, misma generación; ZL1 tiene aero específico)",
   "mclaren-750s": "750S -> McLaren 720S (misma familia; el 750S es el rediseño del 720S)",
-  "nissan-gtr-nismo": "GT-R Nismo R35 -> Nissan GT-R R35 facelift (misma generación; el Nismo añade aero específico)",
-  "mercedes-amg-gle63": "AMG GLE 63 S (SUV) -> Mercedes-AMG GLE 63 Coupé 2022 (misma generación/marca; carrocería cupé)",
-  "ferrari-812-competizione": "812 Competizione -> Ferrari 812 Superfast (misma base; el Competizione añade aero específico)",
-  "lamborghini-urus-performante": "Urus Performante -> Lamborghini Urus (misma generación; el Performante reestiliza paragolpes/faldones)",
-  "honda-nsx-types": "NSX Type S -> Acura NSX NC1 (misma generación; el Type S añade aero/ailerón)",
+  "chevrolet-tahoe-rst": "Tahoe RST 2024 -> Tahoe Z71 Premier 2021 sin distintivos (misma generación; no hay RST civil descargable)",
+  "chevrolet-silverado-zr2": "Silverado ZR2 2024 -> Silverado 1500 RST 2020 (misma generación T1; el ZR2 añade deflectores/barras)",
   "toyota-camry-trd": "Camry TRD (XV70) -> Toyota Camry XSE 2021 (misma generación XV70)",
-  "honda-accord": "Accord Sport 2024 (11ª gen) -> Honda Accord 2021 (10ª gen restyling; no hay 11ª gen descargable)",
+  "honda-accord": "Accord Sport 2024 (11ª gen) -> Honda Accord Mk10 Sport US-spec 2018 (10ª gen; no hay 11ª gen descargable)",
   "tesla-model-3-performance": "Model 3 Performance 2024 (Highland) -> Tesla Model 3 Performance 2023 (pre-Highland; no hay Highland descargable)",
   "suzuki-jimny": "Jimny 2024 -> Suzuki Jimny Sierra 2023 (JB74, misma generación)",
   "subaru-outback": "Outback Wilderness 2024 -> Subaru Outback 2022 (misma generación)",
+  "honda-integra-types": "Integra Type S 2024 -> Honda Integra 1.5T 2022 (misma carrocería DE; el Type S ensancha vías y añade aero)",
+  "bmw-i8": "BMW i8 2020 -> BMW i8 Coupé 2018 (misma generación I12)",
+  "subaru-wrx-sti": "WRX STI 2024 (VB) -> Subaru WRX VB (no existe STI de la generación VB; sedán VB de serie)",
+  "aston-martin-db12": "DB12 Coupé 2024 -> DB12 Volante 2024 (misma carrocería DB12 en versión descapotable; los cupés descargables estaban rotos)",
+  "ford-bronco-raptor": "Bronco Raptor 2024 -> Ford Bronco 2 puertas 2021 (la ficha es 2 puertas; el Raptor añade vías ensanchadas/kit)",
+  "audi-sq8": "Audi SQ8 (mantenido) -> el SQ8 disponible en Sketchfab es flat-shaded; alternativa Q8 RS con export roto",
 };
 
 // Configuración del visor para un vehículo: { url, yaw } (o null).

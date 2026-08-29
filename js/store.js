@@ -519,6 +519,12 @@ const Auth = (function () {
         .forEach((p) => p.items.forEach((it) => ids.push(it.vehicleSlug)));
       Tienda.setGaraje(ids);
     },
+    /** Al arrancar sin sesión activa, el garaje persistido es huérfano
+     * (pertenecía a una sesión previa): se descarta para que no aparezca
+     * ni se re-persista. * */
+    descartarGarajeHuerfano() {
+      if (!this.user() && Tienda.estado.garaje.length) Tienda.setGaraje([]);
+    },
     /** Fusiona los favoritos de invitado con los de la cuenta (como /api/favorites merge). */
     mergeGuestFavorites(slugs) {
       const u = this.user();

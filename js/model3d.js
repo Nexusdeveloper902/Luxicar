@@ -86,7 +86,6 @@ const MODEL3D_STAGES = {
   "tesla-model-x": { glb: "/assets/3d/cars/tesla-model-x.glb", yaw: 0 }, // Model X con puertas Falcon (reemplaza malla sin UV)
   "volkswagen-touareg": { glb: "/assets/3d/cars/volkswagen-touareg.glb", yaw: 0 }, // R eHybrid
   "volvo-xc60": { glb: "/assets/3d/cars/volvo-xc60.glb", yaw: 0 },
-  "volvo-xc90": { glb: "/assets/3d/cars/volvo-xc90.glb", yaw: 0 }, // XC90 II (reemplaza photoscan unlit)
   "lexus-rx": { glb: "/assets/3d/cars/lexus-rx.glb", yaw: 0 }, // RX500h F Sport
   "hyundai-tucson": { glb: "/assets/3d/cars/hyundai-tucson.glb", yaw: 0 }, // NX4
   "hyundai-veloster": { glb: "/assets/3d/cars/hyundai-veloster.glb", yaw: 90 }, // N (ya no usado como fallback del i30 N)
@@ -102,7 +101,6 @@ const MODEL3D_STAGES = {
   "ford-f150-raptor": { glb: "/assets/3d/cars/ford-f150-raptor.glb", yaw: 0 }, // 13ª→14ª gen (2021)
   "ford-bronco-raptor": { glb: "/assets/3d/cars/ford-bronco-raptor.glb", yaw: 180 },
   "chevrolet-silverado": { glb: "/assets/3d/cars/chevrolet-silverado.glb", yaw: 0 },
-  "rivian-r1t": { glb: "/assets/3d/cars/rivian-r1t.glb", yaw: 0 }, // R1T game-ready (reemplaza 308k caras sin texturas)
   "nissan-frontier": { glb: "/assets/3d/cars/nissan-frontier.glb", yaw: 0 },
   "tesla-cybertruck": { glb: "/assets/3d/cars/tesla-cybertruck.glb", yaw: 0 },
 
@@ -194,7 +192,6 @@ const MODEL3D_MAP = {
   "renault-arkana": "renault-arkana",
   "renault-megane-rs": "renault-megane",
   "rivian-r1s": "rivian-r1s",
-  "rivian-r1t": "rivian-r1t",
   "rolls-royce-cullinan": "rolls-royce-cullinan",
   "rolls-royce-ghost": "rolls-royce-ghost",
   "subaru-outback": "subaru-outback",
@@ -211,7 +208,6 @@ const MODEL3D_MAP = {
   "volkswagen-id4": "volkswagen-id4",
   "volkswagen-touareg": "volkswagen-touareg",
   "volvo-xc60": "volvo-xc60",
-  "volvo-xc90-recharge": "volvo-xc90",
 };
 
 // Auditoría 2026-08 (reparación de activos): se reemplazaron/repararon 16 stages con
@@ -247,7 +243,6 @@ const MODEL3D_FALLBACK = {
   "ford-bronco-raptor": "Bronco Raptor 2024 -> Ford Bronco 2 puertas 2021 (la ficha es 2 puertas; el Raptor añade vías ensanchadas/kit)",
   "audi-sq8": "Audi SQ8 (mantenido) -> el SQ8 disponible en Sketchfab es flat-shaded; alternativa Q8 RS con export roto",
   "mercedes-c63-amg": "C63 S AMG 2024 (W206 híbrido enchufable) -> Mercedes-Benz C63 S AMG W205 (anterior generación, mismo trim AMG y carrocería; no hay C63 W206 descargable)",
-  "rivian-r1t": "Rivian R1T 2024 -> Rivian R1T game-ready low-poly (única fuente R1T con texturas; proporciones estilizadas)",
   "rivian-r1s": "Rivian R1S 2024 -> Rivian Electric SUV estilo R1S (no existe R1S descargable; misma familia frontal estadio y carrocería SUV)",
   "peugeot-508-peugeot-sport": "508 PSE 2024 -> Peugeot 508 fastback (niev; color carrocería retintado a gris para casar con la ficha)",
 };

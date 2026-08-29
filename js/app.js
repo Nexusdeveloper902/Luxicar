@@ -535,5 +535,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // Sincronización fina de insignias/botones/secciones al cambiar la tienda.
   Tienda.subscribe(sincronizarTiendaUI);
 
+  // Reconciliación del garaje al arrancar: con sesión activa se reconstruye
+  // desde los pedidos completados (descarta slugs fuera de catálogo); sin sesión,
+  // el garaje persistido es huérfano de una sesión anterior y se descarta.
+  if (Auth.user()) {
+    Auth.syncGarageFromAccount();
+  } else {
+    Auth.descartarGarajeHuerfano();
+  }
+
   render();
 });

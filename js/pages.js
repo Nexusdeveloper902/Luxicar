@@ -11,7 +11,7 @@ function pageHome() {
   const heroVeh = vehiculos.find((v) => v.id === "lamborghini-revuelto") || vehiculos[0];
   const destacadosIds = [
     "mclaren-750s", "rolls-royce-ghost", "lamborghini-revuelto",
-    "porsche-taycan-turbos", "rivian-r1t", "dodge-demon-170",
+    "porsche-taycan-turbos", "ferrari-296-gtb", "dodge-demon-170",
   ];
   const destacados = destacadosIds.map((id) => vehiculos.find((v) => v.id === id)).filter(Boolean);
   const marcas = DB.marcas().map((m) => m.name);

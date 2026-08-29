@@ -70,7 +70,6 @@ cargan todos los modelos desde archivos locales: ninguna descarga en runtime.
 - **porsche-taycan** — [2020 Porsche Taycan Turbo S](https://sketchfab.com/3d-models/2020-porsche-taycan-turbo-s-3657f54c69c242f09fae93104bb20120) por OUTPISTON · CC-BY-NC-SA-4.0
 - **renault-arkana** — [Renault Arkana 2020](https://sketchfab.com/3d-models/15593fcc375a424aa1c41d4e54a2666c) · CC Attribution (reparado: materiales restaurados a partir de nombres de material del autor)
 - **renault-megane** — [2018 Renault Megane R.S. Trophy 300](https://sketchfab.com/3d-models/9bce63693bc2458ab8b3a9170f1718f7) por adrianaflak09 · CC Attribution
-- **rivian-r1t** — [Rivian R1T Pickup Truck | Game-Ready](https://sketchfab.com/3d-models/61222e495bfa410a9c5b4e548f75f889) por DevPoly3D · CC Attribution (reemplazo 2026-08: copia duplicada eliminada; sustituye malla sin texturas)
 - **rolls-royce-cullinan** — [Rolls Royce Cullinan](https://sketchfab.com/3d-models/61f16a1d5be2403abcdd8fa552f730f7) · CC Attribution
 - **rolls-royce-ghost** — [Rolls Royce Ghost](https://sketchfab.com/3d-models/1f614e803fc24946b83bdc2dd9926d62) por kurojishi · CC Attribution
 - **subaru-outback** — [2022 Subaru Outback](https://sketchfab.com/3d-models/a44abee6689e429881209fc6299f505c) por tonielpro520 · CC Attribution
@@ -89,7 +88,6 @@ cargan todos los modelos desde archivos locales: ninguna descarga en runtime.
 - **volkswagen-id4** — [Volkswagen ID.4 2021](https://sketchfab.com/3d-models/502c1a0c911b4dfbaae57a7b25ec890f) por ItsDiyor · CC Attribution
 - **volkswagen-touareg** — [2024 Volkswagen Touareg R eHybrid](https://sketchfab.com/3d-models/b5a96219b5644c6994695a12007fb41e) · CC Attribution-NonCommercial
 - **volvo-xc60** — [2023 Volvo XC60](https://sketchfab.com/3d-models/986e54be12664ff59d0748d003883ace) por tonielpro520 · CC Attribution
-- **volvo-xc90** — [Volvo XC90 MK2 2014](https://sketchfab.com/3d-models/035ed4cc989b492e9881b8ceeca4960b) por szymonpasterczyk · CC Attribution (reemplazo 2026-08: nodos sueltos eliminados; sustituye photoscan unlit)
 - **audi-rs6** — [2020 Audi RS6 Avant](https://sketchfab.com/3d-models/980dbda2cbbb4bae8decaed2fa80aa0c) · CC Attribution-NonCommercial
 - **audi-r8** — [2019 Audi R8 V10 Performance Quattro](https://sketchfab.com/3d-models/2019-audi-r8-v10-performance-quattro-a8bac7478ad74ef885d5812f56d40715) por Ddiaz Design · CC-BY-NC-SA-4.0
 - **bentley-continental-gt** — [2022 Bentley Continental GT Speed](https://sketchfab.com/3d-models/2022-bentley-continental-gt-speed-1f5407e607ae45389bfc4fdc80573f36) por OUTPISTON · CC-BY-NC-SA-4.0
@@ -105,7 +103,7 @@ Dieciséis stages fueron reemplazados o reparados (blanco sin texturas, geometr�
 explodida, orientación vertical, wireframe de depuración): audi-rs6, honda-accord,
 mercedes-gt63, mercedes-s63, mercedes-gle63, rolls-royce-cullinan,
 lambo-aventador-svj, lambo-revuelto, toyota-camry, volkswagen-touareg, suzuki-swift,
-volvo-xc90, hyundai-tucson, hyundai-i30n, chevrolet-tahoe y renault-arkana.
+hyundai-tucson, hyundai-i30n, chevrolet-tahoe y renault-arkana.
 Todos los GLB se normalizaron offline (orientación, escala, origen, apoyo en y=0,
 cuantización + compresión meshopt) antes de integrarse.
 
@@ -114,11 +112,11 @@ cuantización + compresión meshopt) antes de integrarse.
 Diez stages con fallos no reparables por pipeline (mallas sin UV/texturas,
 photoscans unlit, catálogos de piezas, duplicados, fuentes sin licencia CC)
 fueron sustituidos por modelos CC re-descargados: audi-etron-gt, bmw-i8,
-mercedes-c63, mercedes-gt63, nissan-z, peugeot-508, rivian-r1t, rivian-r1s,
-tesla-model-x y volvo-xc90. Cada GLB pasó por normalización offline con límites
+mercedes-c63, mercedes-gt63, nissan-z, peugeot-508, rivian-r1s,
+tesla-model-x. Cada GLB pasó por normalización offline con límites
 computados sobre vértices reales (no metadatos): cirugía de nodos sueltos
-duplicados (r1t: segunda copia; 508: carrocería SW adyacente; xc90: bloque
-flotante, estructura de techo y clúster bajo el suelo), orientación (morro a +Z,
-salvo c63/r1t con morro a -Z compensado con yaw 180), escala a metros reales,
+duplicados (508: carrocería SW adyacente
+flotante), orientación (morro a +Z,
+salvo c63 con morro a -Z compensado con yaw 180), escala a metros reales,
 origen centrado y suelo en y=0, tintado puntual de carrocería (508 gris,
 r1s plata) y compresión dedup + meshopt.

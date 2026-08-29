@@ -1811,7 +1811,7 @@ const SEED = {
    "velocidadMaxima": 201,
    "aceleracion0a100": 3,
    "categoria": "SUV",
-   "descripcion": "La Rivian R1S lleva la misma tecnología quad-motor de 835 CV de la R1T a un SUV de siete plazas. Con capacidad todoterreno excepcional y autonomía de hasta 640 km, es el SUV eléctrico de aventura más capaz.",
+   "descripcion": "La Rivian R1S lleva la tecnología quad-motor de 835 CV a un SUV de siete plazas. Con capacidad todoterreno excepcional y autonomía de hasta 640 km, es el SUV eléctrico de aventura más capaz.",
    "imagenes": [
     "/vehicles/rivian-r1s/1.jpg",
     "/vehicles/rivian-r1s/2.jpg",

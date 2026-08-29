@@ -536,13 +536,28 @@ document.addEventListener("DOMContentLoaded", () => {
   Tienda.subscribe(sincronizarTiendaUI);
 
   // Reconciliación del garaje al arrancar: con sesión activa se reconstruye
-  // desde los pedidos completados (descarta slugs fuera de catálogo); sin sesión,
-  // el garaje persistido es huérfano de una sesión anterior y se descarta.
+  // desde los pedidos completados (descarta slugs retirados del catálogo);
+  // sin sesión, el garaje persistido es huérfano de una sesión anterior y se
+  // descarta para que no quede ni visible ni re-persistido.
   if (Auth.user()) {
     Auth.syncGarageFromAccount();
   } else {
     Auth.descartarGarajeHuerfano();
   }
+
+  // Sincronización entre pestañas: si la sesión cambia en otra pestaña
+  // (login/logout), esta pestaña reconcilia el garaje con el nuevo estado de
+  // sesión y vuelve a renderizar. Evita que una pestaña desactualizada siga
+  // mostrando el contador del garaje (y lo re-persista) tras cerrar sesión.
+  window.addEventListener("storage", (ev) => {
+    if (ev.key !== "luxicar-session") return;
+    if (Auth.user()) {
+      Auth.syncGarageFromAccount();
+    } else {
+      Auth.descartarGarajeHuerfano();
+    }
+    rerender(true);
+  });
 
   render();
 });

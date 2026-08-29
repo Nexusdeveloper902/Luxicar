@@ -54,6 +54,9 @@ function estaActivo(path, href) {
 
 function badgeCount(key) {
   const e = Tienda.estado;
+  // El garaje solo tiene sentido con sesión activa: sin sesión nunca se
+  // muestra contador (p. ej. estado huérfano de una sesión previa).
+  if (key === "garaje" && !Auth.isAuthenticated()) return 0;
   const n = e[key] ? e[key].length : 0;
   return n;
 }
@@ -541,9 +544,11 @@ function refrescarBotonFavCompare(slug) {
 /** Sincroniza las insignias numéricas del header (favoritos/comparar/garaje/carrito). */
 function actualizarInsignias() {
   const e = Tienda.estado;
+  const sesionActiva = Auth.isAuthenticated();
   document.querySelectorAll("[data-badge]").forEach((el) => {
     const key = el.getAttribute("data-badge");
-    const n = e[key] ? e[key].length : 0;
+    // Sin sesión no se muestra contador de garaje (estado huérfano).
+    const n = key === "garaje" && !sesionActiva ? 0 : e[key] ? e[key].length : 0;
     el.textContent = n;
     el.classList.toggle("hidden", n === 0);
     el.classList.toggle("flex", n > 0);

@@ -66,6 +66,19 @@ function fxEspecs(v) {
   ];
 }
 
+// Total de vehículos del catálogo para la escena MERCADO: se calcula siempre
+// desde los datos (nunca hardcode) para que la cifra no quede obsoleta al
+// añadir o retirar anuncios (p. ej. la retirada de rivian-r1t/volvo-xc90).
+function fxTotalVehiculos() {
+  const lista =
+    typeof DB !== "undefined" && typeof DB.vehiculos === "function"
+      ? DB.vehiculos()
+      : typeof SEED !== "undefined" && SEED.vehiculos
+        ? SEED.vehiculos
+        : [];
+  return lista.length;
+}
+
 // ---------------------------------------------------------------------------
 // HTML del escenario cinematográfico (se inyecta antes de las secciones
 // estáticas en pageHome). Con `fx-static` cae en la versión sin secuencias.
@@ -204,7 +217,7 @@ function landingStageHtml(hero, specsVeh) {
     '<div class="fx-scene fx-market" data-scene="market">' +
     '<div class="fx-market-box">' +
     '<p class="fx-kicker">El mercado te espera</p>' +
-    '<h2 class="fx-market-titulo">88 vehículos. <span class="fx-market-brillante">Una colección.</span></h2>' +
+    '<h2 class="fx-market-titulo">' + fxTotalVehiculos() + ' vehículos. <span class="fx-market-brillante">Una colección.</span></h2>' +
     '<a href="/marketplace" data-nav class="fx-market-cta">Entrar al marketplace ' + icon("ArrowRight", "h-4 w-4") + "</a>" +
     "</div></div>" +
     // HUD lateral fijo (capítulos + barra + porcentaje)

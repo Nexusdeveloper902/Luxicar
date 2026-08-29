@@ -37,13 +37,13 @@ const MODEL3D_STAGES = {
   "porsche-taycan": { glb: "/assets/3d/cars/porsche-taycan.glb", yaw: 0 },
   "bmw-m4": { glb: "/assets/3d/cars/bmw-m4.glb", yaw: 0 }, // G82
   "bmw-m5": { glb: "/assets/3d/cars/bmw-m5.glb", yaw: 0 }, // F90
-  "bmw-i8": { glb: "/assets/3d/cars/bmw-i8.glb", yaw: 0 },
+  "bmw-i8": { glb: "/assets/3d/cars/bmw-i8.glb", yaw: 0 }, // I12 Coupé 2015 (sustituye al Alpina)
   "audi-r8": { glb: "/assets/3d/cars/audi-r8.glb", yaw: 0 }, // 4S (gen 2)
   "audi-rs7": { glb: "/assets/3d/cars/audi-rs7.glb", yaw: 0 }, // C8
   "toyota-supra": { glb: "/assets/3d/cars/toyota-supra.glb", yaw: 0 }, // A90
   "toyota-land-cruiser": { glb: "/assets/3d/cars/toyota-land-cruiser.glb", yaw: 0 }, // LC300
   "nissan-gtr": { glb: "/assets/3d/cars/nissan-gtr.glb", yaw: 0 }, // R35 facelift
-  "nissan-z": { glb: "/assets/3d/cars/nissan-z.glb", yaw: 180 }, // RZ34
+  "nissan-z": { glb: "/assets/3d/cars/nissan-z.glb", yaw: 0 }, // RZ34 Nismo 2024 (reemplazo: el anterior estaba de pie)
   "chevrolet-camaro": { glb: "/assets/3d/cars/chevrolet-camaro.glb", yaw: 0 }, // 6ª gen
   "chevrolet-corvette-z06": { glb: "/assets/3d/cars/chevrolet-corvette-z06.glb", yaw: 0 }, // C8 Z06
   "dodge-challenger": { glb: "/assets/3d/cars/dodge-challenger.glb", yaw: 0 }, // LC
@@ -58,14 +58,14 @@ const MODEL3D_STAGES = {
   // --- Berlinas / gran turismo -------------------------------------------------------
   "bmw-i7": { glb: "/assets/3d/cars/bmw-i7.glb", yaw: 0 }, // G70
   "mercedes-s63": { glb: "/assets/3d/cars/mercedes-s63.glb", yaw: 0 }, // W223
-  "mercedes-c63": { glb: "/assets/3d/cars/mercedes-c63.glb", yaw: 180 }, // W206
-  "mercedes-gt63": { glb: "/assets/3d/cars/mercedes-gt63.glb", yaw: 0 }, // X290 4 puertas
+  "mercedes-c63": { glb: "/assets/3d/cars/mercedes-c63.glb", yaw: 180 }, // C63 S AMG W205 texturizado (reemplaza W206 sin texturas)
+  "mercedes-gt63": { glb: "/assets/3d/cars/mercedes-gt63.glb", yaw: 0 }, // X290 4 puertas (reemplaza fuente de catálogo de piezas)
   "rolls-royce-ghost": { glb: "/assets/3d/cars/rolls-royce-ghost.glb", yaw: 0 },
   "bentley-continental-gt": { glb: "/assets/3d/cars/bentley-continental-gt.glb", yaw: 0 }, // 3ª gen GT Speed
   "lexus-lc500": { glb: "/assets/3d/cars/lexus-lc500.glb", yaw: 0 },
   "tesla-model-s": { glb: "/assets/3d/cars/tesla-model-s.glb", yaw: 0 },
   "tesla-model-3": { glb: "/assets/3d/cars/tesla-model-3.glb", yaw: 180 },
-  "audi-etron-gt": { glb: "/assets/3d/cars/audi-etron-gt.glb", yaw: 180 }, // RS e-tron GT
+  "audi-etron-gt": { glb: "/assets/3d/cars/audi-etron-gt.glb", yaw: 0 }, // RS e-tron GT (reemplazo texturizado)
   "byd-han-ev": { glb: "/assets/3d/cars/byd-han-ev.glb", yaw: 0 },
   "byd-seal": { glb: "/assets/3d/cars/byd-seal.glb", yaw: 0 },
   "kia-stinger": { glb: "/assets/3d/cars/kia-stinger.glb", yaw: 0 },
@@ -83,10 +83,10 @@ const MODEL3D_STAGES = {
   "jeep-wrangler": { glb: "/assets/3d/cars/jeep-wrangler.glb", yaw: 0 }, // Rubicon 392
   "chevrolet-tahoe": { glb: "/assets/3d/cars/chevrolet-tahoe.glb", yaw: 0 },
   "rolls-royce-cullinan": { glb: "/assets/3d/cars/rolls-royce-cullinan.glb", yaw: 0 },
-  "tesla-model-x": { glb: "/assets/3d/cars/tesla-model-x.glb", yaw: 0 },
+  "tesla-model-x": { glb: "/assets/3d/cars/tesla-model-x.glb", yaw: 0 }, // Model X con puertas Falcon (reemplaza malla sin UV)
   "volkswagen-touareg": { glb: "/assets/3d/cars/volkswagen-touareg.glb", yaw: 0 }, // R eHybrid
   "volvo-xc60": { glb: "/assets/3d/cars/volvo-xc60.glb", yaw: 0 },
-  "volvo-xc90": { glb: "/assets/3d/cars/volvo-xc90.glb", yaw: 0 },
+  "volvo-xc90": { glb: "/assets/3d/cars/volvo-xc90.glb", yaw: 0 }, // XC90 II (reemplaza photoscan unlit)
   "lexus-rx": { glb: "/assets/3d/cars/lexus-rx.glb", yaw: 0 }, // RX500h F Sport
   "hyundai-tucson": { glb: "/assets/3d/cars/hyundai-tucson.glb", yaw: 0 }, // NX4
   "hyundai-veloster": { glb: "/assets/3d/cars/hyundai-veloster.glb", yaw: 90 }, // N (ya no usado como fallback del i30 N)
@@ -102,7 +102,7 @@ const MODEL3D_STAGES = {
   "ford-f150-raptor": { glb: "/assets/3d/cars/ford-f150-raptor.glb", yaw: 0 }, // 13ª→14ª gen (2021)
   "ford-bronco-raptor": { glb: "/assets/3d/cars/ford-bronco-raptor.glb", yaw: 180 },
   "chevrolet-silverado": { glb: "/assets/3d/cars/chevrolet-silverado.glb", yaw: 0 },
-  "rivian-r1t": { glb: "/assets/3d/cars/rivian-r1t.glb", yaw: 0 },
+  "rivian-r1t": { glb: "/assets/3d/cars/rivian-r1t.glb", yaw: 0 }, // R1T game-ready (reemplaza 308k caras sin texturas)
   "nissan-frontier": { glb: "/assets/3d/cars/nissan-frontier.glb", yaw: 0 },
   "tesla-cybertruck": { glb: "/assets/3d/cars/tesla-cybertruck.glb", yaw: 0 },
 
@@ -112,12 +112,12 @@ const MODEL3D_STAGES = {
   "hyundai-i30n": { glb: "/assets/3d/cars/hyundai-i30n.glb", yaw: 0 }, // i30 N real (antes fallback Veloster N)
   "renault-megane": { glb: "/assets/3d/cars/renault-megane.glb", yaw: 180 }, // RS Trophy
   "peugeot-308": { glb: "/assets/3d/cars/peugeot-308.glb", yaw: 0 },
-  "peugeot-508": { glb: "/assets/3d/cars/peugeot-508.glb", yaw: 0 }, // PSE
+  "peugeot-508": { glb: "/assets/3d/cars/peugeot-508.glb", yaw: 0 }, // PSE fastback (reemplaza fuente descentrada)
   "volkswagen-golf": { glb: "/assets/3d/cars/volkswagen-golf.glb", yaw: 0 }, // Mk8 Golf R
   "suzuki-swift": { glb: "/assets/3d/cars/suzuki-swift.glb", yaw: 0 }, // ZC33S
   "subaru-wrx": { glb: "/assets/3d/cars/subaru-wrx.glb", yaw: 0 }, // VB
   "honda-integra": { glb: "/assets/3d/cars/honda-integra.glb", yaw: 0 },
-  "rivian-r1s": { glb: "/assets/3d/cars/rivian-r1s.glb", yaw: 0 }, // R1S real (antes fallback SQ8)
+  "rivian-r1s": { glb: "/assets/3d/cars/rivian-r1s.glb", yaw: 0 }, // R1S estilizado (reemplaza mesh único sin materiales)
 };
 
 // vehicle id -> stage. Un anuncio puede reusar el stage de otro si comparte
@@ -219,6 +219,13 @@ const MODEL3D_MAP = {
 // normalizaron offline (orientación → escala → origen → suelos) antes de integrarse:
 // el visor recibe activos ya canónicos y aplica su encuadre estándar.
 //
+// Auditoría 2026-08 (reemplazo de activos): 10 stages cuyos fallos no eran
+// reparables con el pipeline (mallas sin UV/texturas, photoscans unlit, catálogos
+// de piezas explotados, fuentes sin licencia CC) se sustituyeron por modelos CC
+// re-descargados y re-normalizados offline (inspección de vértices real ->
+// orientación -> escala -> origen/suelo -> cirugía de nodos sueltos -> tintado
+// puntual de carrocería -> dedup + meshopt). Detalles en assets/3d/CREDITS.md.
+//
 // Vehículos cuyo stage sigue siendo una aproximación (no el modelo exacto).
 // Clave: id de vehículo -> modelo anunciado vs. stage usado y por qué.
 // Auditoría 2026-08: se retiraron de esta lista i30 N, CX-5, GLE 63 (cupé), Cullinan,
@@ -235,11 +242,14 @@ const MODEL3D_FALLBACK = {
   "suzuki-jimny": "Jimny 2024 -> Suzuki Jimny Sierra 2023 (JB74, misma generación)",
   "subaru-outback": "Outback Wilderness 2024 -> Subaru Outback 2022 (misma generación)",
   "honda-integra-types": "Integra Type S 2024 -> Honda Integra 1.5T 2022 (misma carrocería DE; el Type S ensancha vías y añade aero)",
-  "bmw-i8": "BMW i8 2020 -> BMW i8 Coupé 2018 (misma generación I12)",
   "subaru-wrx-sti": "WRX STI 2024 (VB) -> Subaru WRX VB (no existe STI de la generación VB; sedán VB de serie)",
   "aston-martin-db12": "DB12 Coupé 2024 -> DB12 Volante 2024 (misma carrocería DB12 en versión descapotable; los cupés descargables estaban rotos)",
   "ford-bronco-raptor": "Bronco Raptor 2024 -> Ford Bronco 2 puertas 2021 (la ficha es 2 puertas; el Raptor añade vías ensanchadas/kit)",
   "audi-sq8": "Audi SQ8 (mantenido) -> el SQ8 disponible en Sketchfab es flat-shaded; alternativa Q8 RS con export roto",
+  "mercedes-c63-amg": "C63 S AMG 2024 (W206 híbrido enchufable) -> Mercedes-Benz C63 S AMG W205 (anterior generación, mismo trim AMG y carrocería; no hay C63 W206 descargable)",
+  "rivian-r1t": "Rivian R1T 2024 -> Rivian R1T game-ready low-poly (única fuente R1T con texturas; proporciones estilizadas)",
+  "rivian-r1s": "Rivian R1S 2024 -> Rivian Electric SUV estilo R1S (no existe R1S descargable; misma familia frontal estadio y carrocería SUV)",
+  "peugeot-508-peugeot-sport": "508 PSE 2024 -> Peugeot 508 fastback (niev; color carrocería retintado a gris para casar con la ficha)",
 };
 
 // Configuración del visor para un vehículo: { url, yaw } (o null).

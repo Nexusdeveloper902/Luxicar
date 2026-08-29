@@ -87,8 +87,6 @@ const MODEL3D_STAGES = {
   "volkswagen-touareg": { glb: "/assets/3d/cars/volkswagen-touareg.glb", yaw: 0 }, // R eHybrid
   "volvo-xc60": { glb: "/assets/3d/cars/volvo-xc60.glb", yaw: 0 },
   "lexus-rx": { glb: "/assets/3d/cars/lexus-rx.glb", yaw: 0 }, // RX500h F Sport
-  "hyundai-tucson": { glb: "/assets/3d/cars/hyundai-tucson.glb", yaw: 0 }, // NX4
-  "hyundai-veloster": { glb: "/assets/3d/cars/hyundai-veloster.glb", yaw: 90 }, // N (ya no usado como fallback del i30 N)
   "hyundai-ioniq5n": { glb: "/assets/3d/cars/hyundai-ioniq5n.glb", yaw: 0 },
   "kia-ev6": { glb: "/assets/3d/cars/kia-ev6.glb", yaw: 0 },
   "volkswagen-id4": { glb: "/assets/3d/cars/volkswagen-id4.glb", yaw: 0 },
@@ -210,6 +208,15 @@ const MODEL3D_MAP = {
   "volvo-xc60": "volvo-xc60",
 };
 
+// Auditoría 2026-08 (verificación de consistencia post-retirada): el catálogo
+// muestra 86 anuncios; todas las cifras visibles (landing, marketplace, marcas)
+// se calculan desde los datos. Auditoría profunda de stages: 86/86 anuncios
+// resuelven stage; se retiraron los stages muertos hyundai-tucson e
+// hyundai-veloster (ningún anuncio los usaba, ~10.8 MB de GLB muertos) y se
+// simplificó volkswagen-touareg (1.83M -> 465K triángulos, 7.4 -> 2.5 MB) que
+// saturaba el hilo principal al decodificar. Herramientas de auditoría en
+// tools/ (verify-catalog.js, verify-3d.js, analyze-glb.js).
+//
 // Auditoría 2026-08 (reparación de activos): se reemplazaron/repararon 16 stages con
 // materiales faltantes, geometría explotada u orientación vertical. Los nuevos GLB se
 // normalizaron offline (orientación → escala → origen → suelos) antes de integrarse:

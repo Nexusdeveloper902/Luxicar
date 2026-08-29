@@ -39,7 +39,7 @@ cargan todos los modelos desde archivos locales: ninguna descarga en runtime.
 - **hyundai-creta** — [2023 Hyundai Creta](https://sketchfab.com/3d-models/3cc28d4cf5574383b7dc030638ee6199) por ddiaz-design · CC Attribution-NonCommercial
 - **hyundai-i30n** — [2018 Hyundai i30 N](https://sketchfab.com/3d-models/c85b558abbd14acab590f92be22423a4) · CC Attribution-NonCommercial
 - **hyundai-ioniq5n** — [2024 Hyundai Ioniq 5 N](https://sketchfab.com/3d-models/8d16325eb7974a948627b3cd77f30f52) por ddiaz-design · CC Attribution-NonCommercial
-- **hyundai-tucson** — [2022 Hyundai Tucson L 270T](https://sketchfab.com/3d-models/6e69767042b2453ea91d533076821636) · CC Attribution-NonCommercial
+- **volkswagen-touareg** — [2024 Volkswagen Touareg R eHybrid](https://sketchfab.com/3d-models/b5a96219b5644c6994695a12007fb41e) · CC Attribution-NonCommercial (simplificado 2026-08: 1.83M -> 465K triángulos con meshoptimizer; misma malla, materiales y proporciones)
 - **jeep-trackhawk** — [Jeep Grand Cherokee Trackhawk](https://sketchfab.com/3d-models/f8024595e11c48119877c9c7cc554abc) por David_Holiday · CC Attribution
 - **jeep-wrangler** — [2023 Jeep Wrangler Rubicon 392 20th Anniversary](https://sketchfab.com/3d-models/7247a74596224c3dadc219836430279c) por ddiaz-design · CC Attribution-NonCommercial-ShareAlike
 - **kia-ev6** — [2022 Kia EV6](https://sketchfab.com/3d-models/44d11e83ef40492bb4bc3d9fbc41e5e0) por tonielpro520 · CC Attribution
@@ -103,7 +103,8 @@ Dieciséis stages fueron reemplazados o reparados (blanco sin texturas, geometr�
 explodida, orientación vertical, wireframe de depuración): audi-rs6, honda-accord,
 mercedes-gt63, mercedes-s63, mercedes-gle63, rolls-royce-cullinan,
 lambo-aventador-svj, lambo-revuelto, toyota-camry, volkswagen-touareg, suzuki-swift,
-hyundai-tucson, hyundai-i30n, chevrolet-tahoe y renault-arkana.
+hyundai-i30n, chevrolet-tahoe y renault-arkana. (hyundai-tucson fue reparado en su
+momento pero retirado después: ningún anuncio del catálogo usaba ese stage.)
 Todos los GLB se normalizaron offline (orientación, escala, origen, apoyo en y=0,
 cuantización + compresión meshopt) antes de integrarse.
 

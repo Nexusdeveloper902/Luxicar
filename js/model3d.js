@@ -77,7 +77,7 @@ const MODEL3D_STAGES = {
   "bentley-bentayga": { glb: "/assets/3d/cars/bentley-bentayga.glb", yaw: 0 },
   "porsche-cayenne": { glb: "/assets/3d/cars/porsche-cayenne.glb", yaw: 0 }, // Turbo GT
   "bmw-x5m": { glb: "/assets/3d/cars/bmw-x5m.glb", yaw: 0 }, // G05 Competition
-  "mercedes-gle63": { glb: "/assets/3d/cars/mercedes-gle63.glb", yaw: 0 }, // V167 Coupé
+  "mercedes-gle63": { glb: "/assets/3d/cars/mercedes-gle63.glb", yaw: 90 }, // V167 Coupé (fuente orientada a lo largo de X)
   "mercedes-g63": { glb: "/assets/3d/cars/mercedes-g63.glb", yaw: 0 }, // W463
   "jeep-trackhawk": { glb: "/assets/3d/cars/jeep-trackhawk.glb", yaw: 0 },
   "jeep-wrangler": { glb: "/assets/3d/cars/jeep-wrangler.glb", yaw: 0 }, // Rubicon 392
@@ -214,6 +214,11 @@ const MODEL3D_MAP = {
   "volvo-xc90-recharge": "volvo-xc90",
 };
 
+// Auditoría 2026-08 (reparación de activos): se reemplazaron/repararon 16 stages con
+// materiales faltantes, geometría explotada u orientación vertical. Los nuevos GLB se
+// normalizaron offline (orientación → escala → origen → suelos) antes de integrarse:
+// el visor recibe activos ya canónicos y aplica su encuadre estándar.
+//
 // Vehículos cuyo stage sigue siendo una aproximación (no el modelo exacto).
 // Clave: id de vehículo -> modelo anunciado vs. stage usado y por qué.
 // Auditoría 2026-08: se retiraron de esta lista i30 N, CX-5, GLE 63 (cupé), Cullinan,

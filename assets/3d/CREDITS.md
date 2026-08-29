@@ -22,7 +22,7 @@ cargan todos los modelos desde archivos locales: ninguna descarga en runtime.
 - **chevrolet-camaro** — [Chevrolet Camaro ZL1](https://sketchfab.com/3d-models/chevrolet-camaro-zl1-7c589817f91e41d09da4470dcd7d5aaf) por baileydeeznutz · CC Attribution
 - **chevrolet-corvette-z06** — [2023 Chevrolet Corvette Z06](https://sketchfab.com/3d-models/d2a8b148b1824f338d762ad3f101a906) por ddiaz-design · CC Attribution-NonCommercial-ShareAlike
 - **chevrolet-silverado** — [2020 Chevrolet Silverado 1500 RST](https://sketchfab.com/3d-models/d4acf44cf9ea43f086038c9cd0e3bd0d) por Outlaw_Games · CC Attribution-NonCommercial
-- **chevrolet-tahoe** — [2021 Unmarked Chevrolet Tahoe Z71 Premier Unit](https://sketchfab.com/3d-models/2021-unmarked-chevrolet-tahoe-z71-premier-unit-298b079768eb47948421a40a3311868b) por Emmanual Robinson, Jr. · CC Attribution
+- **chevrolet-tahoe** — [2021 Chevrolet Tahoe RST-Police](https://sketchfab.com/3d-models/c18bbb58fafa41f18b168f3a2d980850) · CC Attribution (unidad sin distintivos visibles)
 - **dodge-challenger** — 2018 Dodge Challenger SRT Hellcat por Emmanual Robinson, Jr. · CC-BY-4.0
 - **dodge-charger** — [2021 Dodge Charger SRT Hellcat Redeye](https://sketchfab.com/3d-models/2021-dodge-charger-srt-hellcat-redeye-bf626ddb2e9c441681d322dbebd2bf35) por Drifter Models✨ · CC Attribution
 - **ferrari-296** — [Ferrari 296 GTB](https://sketchfab.com/3d-models/ferrari-296-gtb-9bf45e6115f24b2ca23813b76df16b11) por saba.tchanturia1 · CC Attribution
@@ -32,20 +32,20 @@ cargan todos los modelos desde archivos locales: ninguna descarga en runtime.
 - **ford-f150-raptor** — [2024 Ford F-150 Raptor R](https://sketchfab.com/3d-models/2024-ford-f-150-raptor-r-91aedf1119724f3396dcfe87686545c1) por Ddiaz Design · CC-BY-NC-SA-4.0
 - **ford-gt** — [2017 Ford GT](https://sketchfab.com/3d-models/7eb9c5aca1e84d428898bf88fa9ab8b7) por ddiaz-design · CC Attribution-NonCommercial-ShareAlike
 - **ford-mustang** — [2024 Ford Mustang GT](https://sketchfab.com/3d-models/16f0753d26a04a089223f2d9107a777f) por ddiaz-design · CC Attribution-NonCommercial-ShareAlike
-- **honda-accord** — [Honda Accord (Mk10) sedan Sport US-spec 2018](https://sketchfab.com/3d-models/honda-accord-mk10-sedan-sport-us-spec-2018-12b1c9b1c33b47d490354006a1dd9da4) por Nieve5677 · CC Attribution
+- **honda-accord** — [2021 Honda Accord](https://sketchfab.com/3d-models/e742636e46814de5af1568542e7c9bdb) · CC Attribution-NonCommercial
 - **honda-civic-typer** — [Honda Civic Type R (FL5)](https://sketchfab.com/3d-models/honda-civic-type-r-fl5-2f54931a83744e048cacc3886d6cf5da) por Mona x Supercars · CC Attribution
 - **honda-integra** — [2022 Honda Integra 1.5T](https://sketchfab.com/3d-models/23c6cd35c1bb462ca28db1e61415b2de) por ddiaz-design · CC Attribution-NonCommercial-ShareAlike
 - **honda-nsx** — [2022 Acura NSX Type S](https://sketchfab.com/3d-models/2022-acura-nsx-type-s-3d3d1449aba7481788515d31df448bea) por Maroi Mister Let Me Think Official 3D Studio · CC Attribution
 - **hyundai-creta** — [2023 Hyundai Creta](https://sketchfab.com/3d-models/3cc28d4cf5574383b7dc030638ee6199) por ddiaz-design · CC Attribution-NonCommercial
-- **hyundai-i30n** — [hyundai i30 n](https://sketchfab.com/3d-models/hyundai-i30-n-90c3bd24390b46299cf01c16d5e8091f) por amogusstrikesback2 · CC Attribution
+- **hyundai-i30n** — [2018 Hyundai i30 N](https://sketchfab.com/3d-models/c85b558abbd14acab590f92be22423a4) · CC Attribution-NonCommercial
 - **hyundai-ioniq5n** — [2024 Hyundai Ioniq 5 N](https://sketchfab.com/3d-models/8d16325eb7974a948627b3cd77f30f52) por ddiaz-design · CC Attribution-NonCommercial
-- **hyundai-tucson** — [Hyundai Tucson 2022](https://sketchfab.com/3d-models/hyundai-tucson-2022-574deec95f094e9192b0023d3d4ad607) por Nieve5677 · CC Attribution
+- **hyundai-tucson** — [2022 Hyundai Tucson L 270T](https://sketchfab.com/3d-models/6e69767042b2453ea91d533076821636) · CC Attribution-NonCommercial
 - **jeep-trackhawk** — [Jeep Grand Cherokee Trackhawk](https://sketchfab.com/3d-models/f8024595e11c48119877c9c7cc554abc) por David_Holiday · CC Attribution
 - **jeep-wrangler** — [2023 Jeep Wrangler Rubicon 392 20th Anniversary](https://sketchfab.com/3d-models/7247a74596224c3dadc219836430279c) por ddiaz-design · CC Attribution-NonCommercial-ShareAlike
 - **kia-ev6** — [2022 Kia EV6](https://sketchfab.com/3d-models/44d11e83ef40492bb4bc3d9fbc41e5e0) por tonielpro520 · CC Attribution
 - **kia-stinger** — [Kia Stinger](https://sketchfab.com/3d-models/b1493e68069f4b869743de7a4220a4f4) por Car2022 · CC Attribution
 - **lambo-huracan** — [2019 Lamborghini Huracan Evo](https://sketchfab.com/3d-models/2019-lamborghini-huracan-evo-1e01bcc6aac94b6194979a542f7acd05) por Ddiaz Design · CC-BY-NC-SA-4.0
-- **lambo-revuelto** — [Lamborghini Revuelto](https://sketchfab.com/3d-models/lamborghini-revuelto-2c05874ee41f4060a061371ef096bb5b) por DRIVER-FIRE · CC Attribution
+- **lambo-revuelto** — [Lamborghini Revuelto](https://sketchfab.com/3d-models/4258ff5b559c45f2a470344f0e04c8cd) · CC Attribution-NonCommercial
 - **lambo-urus** — [2023 Lamborghini Urus Performante](https://sketchfab.com/3d-models/2023-lamborghini-urus-performante-cfa6d080a50745a98774fbb582892766) por Ddiaz Design · CC-BY-NC-SA-4.0
 - **lexus-rx** — [2023 Lexus RX500h F Sport](https://sketchfab.com/3d-models/8a3267c9972e4b638a3d5cc7e049211b) por tonielpro520 · CC Attribution
 - **mazda-cx5** — [Mazda CX-5 2020](https://sketchfab.com/3d-models/mazda-cx-5-2020-ea176c6ebe814be3b06641bf038f8642) por ItsDiyor · CC Attribution
@@ -54,9 +54,9 @@ cargan todos los modelos desde archivos locales: ninguna descarga en runtime.
 - **mclaren-artura** — [2023 McLaren Artura](https://sketchfab.com/3d-models/2023-mclaren-artura-d393abd807f04d62b96b1bd82119b5d4) por Ddiaz Design · CC Attribution
 - **mercedes-c63** — [Mercedes-Benz C-Class (W206) 2022](https://sketchfab.com/3d-models/a2277c6f0ce44949bb20253a9165c873) por szymonpasterczyk · CC Attribution
 - **mercedes-g63** — [2025 Mercedes-Benz G-Class AMG G 63](https://sketchfab.com/3d-models/f583b5bfc17346c08573dc4f1edebefe) por ddiaz-design · CC Attribution-NonCommercial
-- **mercedes-gle63** — [Mercedes- Benz GLE 63 AMG 2021](https://sketchfab.com/3d-models/mercedes-benz-gle-63-amg-2021-6c9cb81cdc7045c58382c2caae597abd) por Nieve5677 · CC Attribution
-- **mercedes-gt63** — [Mercedes- Benz AMG GT 4- Door Coupe (X290)](https://sketchfab.com/3d-models/fe00234b5af84539ade55c31ca6639e3) por ZapupaNekra · CC Attribution
-- **mercedes-s63** — [Mercedes-Benz V/W/X/Z223) 2020](https://sketchfab.com/3d-models/mercedes-benz-vwxz223-2020-0fe2fa214c904caf9b64f0a54713607a) por Merc_TV · CC Attribution
+- **mercedes-gle63** — [Mercedes-AMG GLE 63 Coupe 2022](https://sketchfab.com/3d-models/ac4667c76f4e4e6c813ff3e72bc07ff8) · CC Attribution (reparado: plano de suelo eliminado)
+- **mercedes-gt63** — [Mercedes- Benz AMG GT 4- Door Coupe (X290)](https://sketchfab.com/3d-models/fe00234b5af84539ade55c31ca6639e3) por ZapupaNekra · CC Attribution (reparado: clusters explotados recolocados)
+- **mercedes-s63** — [Mersedes-Benz S-class W223 [BRABUS 850]](https://sketchfab.com/3d-models/297e1da45b874276aae24c4a8ec10982) · CC Attribution
 - **nissan-ariya** — [2020 Nissan Ariya](https://sketchfab.com/3d-models/414019b3a89a45fe914b977e48925f39) por tonielpro520 · CC Attribution
 - **nissan-frontier** — [2022 Nissan Frontier With gas powered V6 Engine](https://sketchfab.com/3d-models/93f969029b6e4151b05fd3e9f0971a20) por Bobby.2024 · CC Attribution
 - **nissan-gtr** — [2024 Nissan GT-R Nismo](https://sketchfab.com/3d-models/2024-nissan-gt-r-nismo-20a14338df064c06a3606bab6894adbc) por Ddiaz Design · CC-BY-NC-SA-4.0
@@ -68,33 +68,43 @@ cargan todos los modelos desde archivos locales: ninguna descarga en runtime.
 - **porsche-cayman** — [2022 Porsche 718 Cayman GT4 RS](https://sketchfab.com/3d-models/b1d87619f6174f10be47423fcd4de444) por ddiaz-design · CC Attribution
 - **porsche-panamera** — 2021 Porsche Panamera Turbo S Sport Turismo por Ddiaz Design · CC-BY-4.0
 - **porsche-taycan** — [2020 Porsche Taycan Turbo S](https://sketchfab.com/3d-models/2020-porsche-taycan-turbo-s-3657f54c69c242f09fae93104bb20120) por OUTPISTON · CC-BY-NC-SA-4.0
-- **renault-arkana** — [2019 Renault Arkana](https://sketchfab.com/3d-models/b28e3bd3a038423b9d1a5c27cc45087f) por tonielpro520 · CC Attribution
+- **renault-arkana** — [Renault Arkana 2020](https://sketchfab.com/3d-models/15593fcc375a424aa1c41d4e54a2666c) · CC Attribution (reparado: materiales restaurados a partir de nombres de material del autor)
 - **renault-megane** — [2018 Renault Megane R.S. Trophy 300](https://sketchfab.com/3d-models/9bce63693bc2458ab8b3a9170f1718f7) por adrianaflak09 · CC Attribution
-- **rivian-r1t** — [Rivian R1T 2022 [Free!]](https://sketchfab.com/3d-models/89ec895feb8145768f93382f356affb5) por 3dblender_1 · CC Attribution
-- **rolls-royce-cullinan** — [Rolls-Royce Cullinan 2018](https://sketchfab.com/3d-models/rolls-royce-cullinan-2018-ab7e7e11a9ff48f1a147370c8c6c20f0) por Merc_TV · CC Attribution
+- **rivian-r1t** — [Rivian R1T 2022 [Free!]](https://sketchfab.com/3d-models/89ec895feb8145768f93382f356affb5) por 3dblender_1 · CC Attribution (re-descargado: la conversión local estaba degradada)
+- **rolls-royce-cullinan** — [Rolls Royce Cullinan](https://sketchfab.com/3d-models/61f16a1d5be2403abcdd8fa552f730f7) · CC Attribution
 - **rolls-royce-ghost** — [Rolls Royce Ghost](https://sketchfab.com/3d-models/1f614e803fc24946b83bdc2dd9926d62) por kurojishi · CC Attribution
 - **subaru-outback** — [2022 Subaru Outback](https://sketchfab.com/3d-models/a44abee6689e429881209fc6299f505c) por tonielpro520 · CC Attribution
 - **subaru-wrx** — [Subaru WRX (VB)](https://sketchfab.com/3d-models/subaru-wrx-vb-ee2b94827a904360acb61987e1765983) por ilvskf · CC Attribution
 - **suzuki-jimny** — [2023 Suzuki Jimny Sierra](https://sketchfab.com/3d-models/8b7c4d136f6742e180faf654d874f14a) por tonielpro520 · CC Attribution
-- **suzuki-swift** — [Suzuki Swift Sport](https://sketchfab.com/3d-models/suzuki-swift-sport-cfba568fdc6f45fca3c2ca4bb7e4dee2) por DR1KING100K · CC Attribution
+- **suzuki-swift** — [2020 Suzuki Swift Sport (ZC33S)](https://sketchfab.com/3d-models/00a05ca44b4345acbc0540e1e9517db9) · CC Attribution
 - **tesla-cybertruck** — [Tesla CyberTruck](https://sketchfab.com/3d-models/tesla-cybertruck-e95c44b87b57467098c82ba9f316f36d) por Mr3DDD · CC Attribution
 - **tesla-model-3** — [2023 Tesla Model 3 Performance](https://sketchfab.com/3d-models/6bd2ab6e23a545858d5c98c995528067) por supercarmodels · CC Attribution
 - **tesla-model-s** — [2022 Tesla Model S Plaid](https://sketchfab.com/3d-models/d55cd7890b38470bb00a244ec6bea813) por shreyanshchaurasia13 · CC Attribution
 - **tesla-model-x** — [Tesla Model X](https://sketchfab.com/3d-models/5c08f723bfc94a98b7d7918e3e4ff1dc) por David_Holiday · CC Attribution
-- **toyota-camry** — [Toyota Camry XSE 2021](https://sketchfab.com/3d-models/48ca8b027bd04c4ba67136c4021efc8e) por niev · CC Attribution
+- **toyota-camry** — [2019 Toyota Camry Hybrid XSE](https://sketchfab.com/3d-models/2970152b253d4dd29bb7e7b702d2ce60) · CC Attribution-NonCommercial
 - **toyota-gr-corolla** — [2023 Toyota GR Corolla](https://sketchfab.com/3d-models/204283fa663d4ccea7f3bdfd1ba6680e) por srineshchethiya · CC Attribution
 - **toyota-land-cruiser** — 2022 Toyota Land Cruiser 300 VX.R por Ddiaz Design · CC-BY-NC-SA-4.0
 - **toyota-supra** — Toyota Supra MK5 A90 por pryanex · CC-BY-4.0
 - **volkswagen-golf** — [2025 Volkswagen Golf R](https://sketchfab.com/3d-models/2025-volkswagen-golf-r-d1a0e38cbb2b4cb3b0da13c2ccdcf730) por Ddiaz Design · CC-BY-NC-SA-4.0
 - **volkswagen-id4** — [Volkswagen ID.4 2021](https://sketchfab.com/3d-models/502c1a0c911b4dfbaae57a7b25ec890f) por ItsDiyor · CC Attribution
-- **volkswagen-touareg** — [2019 Volkswagen Touareg](https://sketchfab.com/3d-models/2019-volkswagen-touareg-01ebcd288e374afe8f60670e440df061) por terran4627 · CC Attribution
+- **volkswagen-touareg** — [2024 Volkswagen Touareg R eHybrid](https://sketchfab.com/3d-models/b5a96219b5644c6994695a12007fb41e) · CC Attribution-NonCommercial
 - **volvo-xc60** — [2023 Volvo XC60](https://sketchfab.com/3d-models/986e54be12664ff59d0748d003883ace) por tonielpro520 · CC Attribution
-- **volvo-xc90** — [Volvo XC90 MK2 2014](https://sketchfab.com/3d-models/035ed4cc989b492e9881b8ceeca4960b) por szymonpasterczyk · CC Attribution
-- **audi-rs6** — [2021 Audi RS6 Avant C8](https://sketchfab.com/3d-models/2021-audi-rs6-avant-c8-3d9072a19a3a4c1189bccb49d314e8ce) por tonielpro520 · CC Attribution
+- **volvo-xc90** — [Photoscanned Volvo XC90](https://sketchfab.com/3d-models/7520f0e2faa44b21aad13e553413c566) · CC Attribution
+- **audi-rs6** — [2020 Audi RS6 Avant](https://sketchfab.com/3d-models/980dbda2cbbb4bae8decaed2fa80aa0c) · CC Attribution-NonCommercial
 - **audi-r8** — [2019 Audi R8 V10 Performance Quattro](https://sketchfab.com/3d-models/2019-audi-r8-v10-performance-quattro-a8bac7478ad74ef885d5812f56d40715) por Ddiaz Design · CC-BY-NC-SA-4.0
 - **bentley-continental-gt** — [2022 Bentley Continental GT Speed](https://sketchfab.com/3d-models/2022-bentley-continental-gt-speed-1f5407e607ae45389bfc4fdc80573f36) por OUTPISTON · CC-BY-NC-SA-4.0
 - **lexus-lc500** — [Lexus LC 500 (Z100)](https://sketchfab.com/3d-models/lexus-lc-500-z100-71982b89984f417c955ef37b2bb8ea77) por Mona x Supercars · CC Attribution
 - **aston-martin-db12** — [2024 Aston Martin DB12 Volante](https://sketchfab.com/3d-models/2024-aston-martin-db12-volante-18e282919eb9474ebf0644348d66329b) por OUTPISTON · CC-BY-NC-SA-4.0
 - **ford-bronco-raptor** — [2021 Ford Bronco 2-door](https://sketchfab.com/3d-models/2021-ford-bronco-2-door-98b8590146a8447da52a1fefce064f0b) por Ddiaz Design · CC-BY-NC-SA-4.0
-- **lambo-aventador-svj** — [Lamborghini Aventador SVJ](https://sketchfab.com/3d-models/lamborghini-aventador-svj-6d30b5df8de14d90a3266fb5680679a7) por Nieve5677 · CC Attribution
-- **rivian-r1s** — [Rivian](https://sketchfab.com/3d-models/rivian-606e72b634ba4a67ab015ee79e7cedbf) por Chenzoss · CC Attribution
+- **lambo-aventador-svj** — [Lamborghini Aventador SVJ SDC ( FREE )](https://sketchfab.com/3d-models/784e4656aca649cca55d6b18740a19b2) · CC Attribution
+- **rivian-r1s** — [Rivian](https://sketchfab.com/3d-models/rivian-606e72b634ba4a67ab015ee79e7cedbf) por Chenzoss · CC Attribution (re-descargado y re-normalizado)
+
+## Reparación de activos (auditoría 2026-08)
+
+Dieciséis stages fueron reemplazados o reparados (blanco sin texturas, geometría
+explodida, orientación vertical, wireframe de depuración): audi-rs6, honda-accord,
+mercedes-gt63, mercedes-s63, mercedes-gle63, rolls-royce-cullinan,
+lambo-aventador-svj, lambo-revuelto, toyota-camry, volkswagen-touareg, suzuki-swift,
+volvo-xc90, hyundai-tucson, hyundai-i30n, chevrolet-tahoe y renault-arkana.
+Todos los GLB se normalizaron offline (orientación, escala, origen, apoyo en y=0,
+cuantización + compresión meshopt) antes de integrarse.

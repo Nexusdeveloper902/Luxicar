@@ -1823,32 +1823,6 @@ const SEED = {
    "featured": false
   },
   {
-   "id": "rivian-r1t",
-   "marca": "Rivian",
-   "modelo": "R1T",
-   "año": 2024,
-   "precio": 71700,
-   "motor": "Quad-Motor Eléctrico AWD",
-   "potencia": 835,
-   "torque": 0,
-   "transmision": "Automática 1 velocidad",
-   "combustible": "Eléctrico",
-   "traccion": "AWD",
-   "velocidadMaxima": 177,
-   "aceleracion0a100": 3,
-   "categoria": "Pickup",
-   "descripcion": "La Rivian R1T reinventa la pickup eléctrica con cuatro motores independientes que generan 835 CV. Capaz de cruzar ríos de 1 metro de profundidad y acelerar de 0 a 100 en 3 segundos, es la aventura eléctrica definitiva.",
-   "imagenes": [
-    "/vehicles/rivian-r1t/1.jpg",
-    "/vehicles/rivian-r1t/2.jpg",
-    "/vehicles/rivian-r1t/3.jpg",
-    "/vehicles/rivian-r1t/4.jpg"
-   ],
-   "stock": 2,
-   "available": true,
-   "featured": false
-  },
-  {
    "id": "rolls-royce-cullinan",
    "marca": "Rolls-Royce",
    "modelo": "Cullinan",
@@ -2264,32 +2238,6 @@ const SEED = {
    "available": true,
    "featured": false
   },
-  {
-   "id": "volvo-xc90-recharge",
-   "marca": "Volvo",
-   "modelo": "XC90 Recharge",
-   "año": 2024,
-   "precio": 71900,
-   "motor": "2.0L Turbo Híbrido Enchufable",
-   "potencia": 455,
-   "torque": 709,
-   "transmision": "Automática 8 velocidades",
-   "combustible": "Híbrido",
-   "traccion": "AWD",
-   "velocidadMaxima": 180,
-   "aceleracion0a100": 5.3,
-   "categoria": "SUV",
-   "descripcion": "El Volvo XC90 Recharge combina la seguridad escandinava con la electrificación. Su sistema híbrido enchufable de 455 CV ofrece prestaciones de deportivo en un SUV familiar de siete plazas, con la elegancia minimalista de Volvo.",
-   "imagenes": [
-    "/vehicles/volvo-xc90-recharge/1.jpg",
-    "/vehicles/volvo-xc90-recharge/2.jpg",
-    "/vehicles/volvo-xc90-recharge/3.jpg",
-    "/vehicles/volvo-xc90-recharge/4.jpg"
-   ],
-   "stock": 2,
-   "available": true,
-   "featured": false
-  }
  ],
  "marcas": [
   {
@@ -2517,9 +2465,9 @@ const SEED = {
    "name": "Rivian",
    "slug": "rivian",
    "description": "Aventura eléctrica con vehículos todoterreno de nueva generación.",
-   "cantidad": 2,
-   "precioMin": 71700,
-   "precioMax": 75700,
+   "cantidad":1,
+   "precioMin":75700,
+   "precioMax":75700,
    "imagen": "/vehicles/rivian-r1s/1.jpg"
   },
   {
@@ -2587,10 +2535,10 @@ const SEED = {
    "name": "Volvo",
    "slug": "volvo",
    "description": "Seguridad escandinava y diseño minimalista atemporal.",
-   "cantidad": 2,
-   "precioMin": 47000,
-   "precioMax": 71900,
-   "imagen": "/vehicles/volvo-xc90-recharge/1.jpg"
+   "cantidad":1,
+   "precioMin":47000,
+   "precioMax":47000,
+   "imagen": "/vehicles/volvo-xc60/1.jpg",
   }
  ],
  "usuarios": [
@@ -2981,7 +2929,7 @@ const SEED = {
    "number": "LXC-2025-00024",
    "userEmail": "ana@demo.com",
    "status": "COMPLETED",
-   "total": 132900,
+   "total": 61000,
    "createdAt": "2025-04-11T00:00:00.000Z",
    "items": [
     {
@@ -2989,13 +2937,6 @@ const SEED = {
      "marca": "Kia",
      "modelo": "EV6 GT",
      "priceAtPurchase": 61000,
-     "quantity": 1
-    },
-    {
-     "vehicleSlug": "volvo-xc90-recharge",
-     "marca": "Volvo",
-     "modelo": "XC90 Recharge",
-     "priceAtPurchase": 71900,
      "quantity": 1
     }
    ]
@@ -3459,7 +3400,7 @@ const SEED = {
    "number": "LXC-2026-00032",
    "userEmail": "diego@demo.com",
    "status": "COMPLETED",
-   "total": 121700,
+   "total": 50000,
    "createdAt": "2026-02-05T00:00:00.000Z",
    "items": [
     {
@@ -3467,13 +3408,6 @@ const SEED = {
      "marca": "Kia",
      "modelo": "Stinger GT",
      "priceAtPurchase": 50000,
-     "quantity": 1
-    },
-    {
-     "vehicleSlug": "rivian-r1t",
-     "marca": "Rivian",
-     "modelo": "R1T",
-     "priceAtPurchase": 71700,
      "quantity": 1
     }
    ]
@@ -3906,4 +3840,4 @@ const SEED = {
 };
 
 // Orden relevancia de listVehicles (featured desc, createdAt desc).
-SEED.ordenRelevancia = ["kia-ev6-gt","kia-stinger-gt","hyundai-i30n","suzuki-swift-sport","jeep-wrangler-rubicon","aston-martin-vantage","aston-martin-db12","nissan-z-nismo","chevrolet-corvette-z06","tesla-model-s-plaid","mercedes-s63-amg","bmw-m4-competition","lamborghini-huracan-evo","audi-etron-gt","bmw-i7","mercedes-amg-gle63","volkswagen-touareg","volkswagen-id4","volkswagen-golf-r","hyundai-ioniq5n","mazda-cx5","mazda-mx5-miata","suzuki-jimny","renault-arkana","renault-megane-rs","peugeot-508-peugeot-sport","peugeot-308-gt","subaru-outback","subaru-wrx-sti","jeep-grand-cherokee-trackhawk","dodge-demon-170","dodge-charger-hellcat","byd-seal","byd-han-ev","rivian-r1s","rivian-r1t","volvo-xc60","volvo-xc90-recharge","lexus-rx-fsport","lexus-lc500","rolls-royce-cullinan","rolls-royce-ghost","bentley-bentayga","bentley-continental-gt","mclaren-artura","mclaren-750s","nissan-frontier","nissan-ariya","nissan-gtr-nismo","chevrolet-tahoe-rst","chevrolet-silverado-zr2","chevrolet-camaro-zl1","ford-bronco-raptor","ford-f150-raptor-r","ford-gt","ford-mustang-gt","honda-integra-types","honda-accord","honda-nsx-types","honda-civic-type-r","toyota-camry-trd","toyota-land-cruiser","toyota-gr-corolla","toyota-gr-supra","tesla-cybertruck","tesla-model-x-plaid","tesla-model-3-performance","audi-sq8","audi-rs7-sportback","audi-r8-v10","audi-rs6-avant","mercedes-c63-amg","mercedes-g63-amg","mercedes-amg-gt-63","bmw-x5m-competition","bmw-i8","bmw-m5-cs","lamborghini-urus-performante","lamborghini-revuelto","lamborghini-aventador-svj","ferrari-812-competizione","ferrari-roma","ferrari-sf90-stradale","ferrari-296-gtb","porsche-718-cayman-gt4","porsche-cayenne-turbogt","porsche-taycan-turbos","porsche-911-carrera"];
+SEED.ordenRelevancia = ["kia-ev6-gt","kia-stinger-gt","hyundai-i30n","suzuki-swift-sport","jeep-wrangler-rubicon","aston-martin-vantage","aston-martin-db12","nissan-z-nismo","chevrolet-corvette-z06","tesla-model-s-plaid","mercedes-s63-amg","bmw-m4-competition","lamborghini-huracan-evo","audi-etron-gt","bmw-i7","mercedes-amg-gle63","volkswagen-touareg","volkswagen-id4","volkswagen-golf-r","hyundai-ioniq5n","mazda-cx5","mazda-mx5-miata","suzuki-jimny","renault-arkana","renault-megane-rs","peugeot-508-peugeot-sport","peugeot-308-gt","subaru-outback","subaru-wrx-sti","jeep-grand-cherokee-trackhawk","dodge-demon-170","dodge-charger-hellcat","byd-seal","byd-han-ev","rivian-r1s","volvo-xc60","lexus-rx-fsport","lexus-lc500","rolls-royce-cullinan","rolls-royce-ghost","bentley-bentayga","bentley-continental-gt","mclaren-artura","mclaren-750s","nissan-frontier","nissan-ariya","nissan-gtr-nismo","chevrolet-tahoe-rst","chevrolet-silverado-zr2","chevrolet-camaro-zl1","ford-bronco-raptor","ford-f150-raptor-r","ford-gt","ford-mustang-gt","honda-integra-types","honda-accord","honda-nsx-types","honda-civic-type-r","toyota-camry-trd","toyota-land-cruiser","toyota-gr-corolla","toyota-gr-supra","tesla-cybertruck","tesla-model-x-plaid","tesla-model-3-performance","audi-sq8","audi-rs7-sportback","audi-r8-v10","audi-rs6-avant","mercedes-c63-amg","mercedes-g63-amg","mercedes-amg-gt-63","bmw-x5m-competition","bmw-i8","bmw-m5-cs","lamborghini-urus-performante","lamborghini-revuelto","lamborghini-aventador-svj","ferrari-812-competizione","ferrari-roma","ferrari-sf90-stradale","ferrari-296-gtb","porsche-718-cayman-gt4","porsche-cayenne-turbogt","porsche-taycan-turbos","porsche-911-carrera"];

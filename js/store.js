@@ -94,7 +94,16 @@ const Tienda = (function () {
   );
 
   function guardar() {
-    lsSet(KEY, { state: estado, version: 0 });
+    // Sin sesión activa el garaje persistido sería huérfano de una sesión
+    // anterior (p. ej. re-escrito desde una pestaña desactualizada): se
+    // persiste vacío para que nunca reaparezca tras cerrar sesión.
+    const sinSesion =
+      typeof Auth === "undefined" ||
+      !(typeof Auth.user === "function" && Auth.user());
+    const aGuardar = sinSesion && estado.garaje.length
+      ? Object.assign({}, estado, { garaje: [] })
+      : estado;
+    lsSet(KEY, { state: aGuardar, version: 0 });
   }
 
   function emitir() {
@@ -509,7 +518,8 @@ const Auth = (function () {
       Tienda.vaciarComparador();
       emitir();
     },
-    /** Reconstruye el garaje de la tienda desde los pedidos completados de la cuenta. */
+    /** Reconstruye el garaje de la tienda desde los pedidos completados de la
+     * cuenta, descartando slugs que ya no existen en el catálogo (retirados). */
     syncGarageFromAccount() {
       const u = this.user();
       if (!u) return;
@@ -517,11 +527,11 @@ const Auth = (function () {
       DB.pedidosDe(u.email)
         .filter((p) => p.status === "COMPLETED")
         .forEach((p) => p.items.forEach((it) => ids.push(it.vehicleSlug)));
-      Tienda.setGaraje(ids);
+      Tienda.setGaraje(ids.filter((slug) => DB.vehiculo(slug)));
     },
     /** Al arrancar sin sesión activa, el garaje persistido es huérfano
      * (pertenecía a una sesión previa): se descarta para que no aparezca
-     * ni se re-persista. * */
+     * ni se re-persista. */
     descartarGarajeHuerfano() {
       if (!this.user() && Tienda.estado.garaje.length) Tienda.setGaraje([]);
     },

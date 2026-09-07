@@ -555,6 +555,12 @@ document.addEventListener("DOMContentLoaded", () => {
       Auth.syncGarageFromAccount();
     } else {
       Auth.descartarGarajeHuerfano();
+      // Espejo del logout en otra pestaña: el carrito/favoritos/comparador ya
+      // se persistieron vacíos allí; aquí se descartan de memoria para que los
+      // badges no queden obsoletos ni se re-persistan al siguiente cambio.
+      Tienda.vaciarCarrito();
+      Tienda.setFavoritos([]);
+      Tienda.vaciarComparador();
     }
     rerender(true);
   });

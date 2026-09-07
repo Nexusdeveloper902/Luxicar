@@ -510,12 +510,16 @@ const Auth = (function () {
     },
     logout() {
       try { localStorage.removeItem(KEY_SESION); } catch (e) {}
-      // Garaje, favoritos y comparador en memoria pertenecen a la sesión que
-      // cierra: no deben quedar visibles (badges, contadores del header) para
-      // el siguiente usuario ni fusionarse en su cuenta al iniciar sesión.
+      // Garaje, favoritos, comparador y carrito en memoria pertenecen a la
+      // sesión que cierra: no deben quedar visibles (badges, contadores del
+      // header) para el siguiente usuario ni fusionarse en su cuenta al
+      // iniciar sesión. El carrito se vacía para que su menú/badge se
+      // resetee al cerrar sesión (al iniciar sesión se conserva, eso es
+      // intencional y no se toca aquí).
       Tienda.setGaraje([]);
       Tienda.setFavoritos([]);
       Tienda.vaciarComparador();
+      Tienda.vaciarCarrito();
       emitir();
     },
     /** Reconstruye el garaje de la tienda desde los pedidos completados de la
